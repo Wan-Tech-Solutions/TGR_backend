@@ -12,7 +12,17 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Sync emails from all configured email addresses every 5 minutes
+        $schedule->command('app:check-email')
+                 ->everyFiveMinutes()
+                 ->withoutOverlapping()
+                 ->appendOutputTo(storage_path('logs/email-sync.log'));
+
+        // Optional: Run a full sync every hour (catches any missed emails)
+        $schedule->command('app:check-email')
+                 ->hourly()
+                 ->withoutOverlapping()
+                 ->appendOutputTo(storage_path('logs/email-sync.log'));
     }
 
     /**

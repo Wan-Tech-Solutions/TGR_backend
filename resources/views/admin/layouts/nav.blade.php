@@ -16,7 +16,7 @@
         <!-- Home -->
         <li class="nav-small-cap">
           <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-          <span class="hide-menu">Home</span>
+          <span class="hide-menu">Homee</span>
         </li>
         <!-- Dashboard -->
         @role('superadmin')
@@ -48,11 +48,11 @@
               </a>
             </li>
             <li class="sidebar-item">
-              <a href="{{ route('questionnaires-book-consultations') }}" class="sidebar-link">
+              <a href="{{ route('admin.consultations.index') }}" class="sidebar-link">
                 <div class="round-16 d-flex align-items-center justify-content-center">
                   <i class="ti ti-circle"></i>
                 </div>
-                <span class="hide-menu">Consultations</span>
+                <span class="hide-menu">Consultation Bookings</span>
               </a>
             </li>
             <li class="sidebar-item">

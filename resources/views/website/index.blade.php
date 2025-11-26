@@ -161,7 +161,7 @@
     </div>
 </div>
 
-<script>
+{{-- <script>
     // Book popup script
     window.onload = function() {
         var show_delay = 0; // Show immediately on page load (0ms delay)
@@ -180,7 +180,7 @@
             document.getElementById('overlay').style.display = 'none';
         };
     };
-</script>
+</script> --}}
 
 <!-- End of Book popup -->
     <div role="main" class="main">

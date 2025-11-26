@@ -1,7 +1,7 @@
 @extends('website.layouts.main')
 
 @section('title')
-Analytics
+Investment
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@ Analytics
     <div class="container">
         <div class="row">
             <div class="col-md-8 order-2 order-md-1 align-self-center p-static">
-                <h1>TGR <strong>Analytics</strong></h1>
+                <h1><strong>Investment</strong></h1>
                 {{-- <span class="sub-title">Get in touch with us</span> --}}
             </div>
             <div class="col-md-4 order-1 order-md-2 align-self-center">
                 <ul class="breadcrumb breadcrumb-light d-block text-md-end">
                     <li><a href="{{ route('home') }}">Home</a></li>
                     <li>Advisory</li>
-                    <li class="active">Analytics</li>
+                    <li class="active">Investment</li>
                 </ul>
             </div>
         </div>
@@ -31,35 +31,28 @@ Analytics
         <div class="col-lg-8">
             <div class="overflow-hidden mb-2">
                 <h2 class="font-weight-normal text-7 mb-2 appear-animation" data-appear-animation="maskUp"
-                    data-appear-animation-delay="200">TGR <strong class="font-weight-extra-bold">Analytics</strong></h2>
+                    data-appear-animation-delay="200"><strong class="font-weight-extra-bold">How we can support:</strong></h2>
             </div>
-            <div class="overflow-hidden mb-4">
+            {{-- <div class="overflow-hidden mb-4">
                 <p class="lead mb-0 appear-animation" style="text-align: justify" data-appear-animation="maskUp"
-                    data-appear-animation-delay="400">You might find yourself at the stage of your transition
-                    journey where you may have
-                    finally discovered potential business ideas which you would like to purse upon return.
-                    However, you lack the adequate research and market intelligence needed to assess the
-                    viability of your business idea. We understand that It’s very difficult to take time off
-                    from your busy schedule just travel to Ghana. The financial costs involved over an
-                    extensive period of time to conduct your own independent investigation may also be
-                    another barrier preventing you from doing so.
+                    data-appear-animation-delay="400">How we can support:
                 </p>
-            </div>
-            <p class="text-color-light-3 mb-4 appear-animation" style="text-align: justify"
-                data-appear-animation="fadeInUpShorter" data-appear-animation-delay="600">Depending on family
-                and friends to
-                conduct market research could be very risky and could potentially lead to poor quality
-                research. What we do with TGR Analytics is to make it our responsibility to conduct the
-                necessary market research and intelligence on your behalf. Our goal is to provide you
-                with accurate information which would allow you to assess the viability of your business
-                idea.</p>
+            </div> --}}
+            <ul class="list mt-4 mb-3 text-2 appear-animation" style="text-align: justify"
+                data-appear-animation="fadeInUpShorter" data-appear-animation-delay="600">
+                <li>Understanding your unique investor profile and the various investment pathways available to you</li>
+                <li>Source and carry out due diligence on potential investment opportunities</li>
+                <li>Build a private investment portfolio that aligns with your financial goals</li>
+                <li>Coordinate with local partners and organizations to help facilitate your investments</li>
+                <li>Provide oversight and management of investments and assets so you don't have to</li>
+            </ul>
         </div>
         <div class="col-lg-4">
             <div class="testimonial testimonial-secondary appear-animation" data-appear-animation="fadeIn"
                 data-appear-animation-delay="800">
                 <blockquote>
-                    <p class="mb-0">If you would like more information on TGR Analytics, please book a consultation to
-                        speak to one of our advisors.</p>
+                    <p class="mb-0">Book a consultation and speak to one of our advisors for more information on the various ways we can support you
+.</p>
                     <hr>
                     <a href="{{ route('contact') }}"
                         class="btn btn-dark font-weight-semibold btn-px-4 btn-py-2 text-2">Book a Consultation</a>
@@ -133,7 +126,7 @@ Analytics
                                         would give you a chance to ask any relevant ques4ons pertaining to our findings.
                                     </p>
                                     <P>Additionally, we shall consolidate the en4re research project into a documented format
-                                        for you to review in your own 4me. TGR Analytics will take place over a 4 to 8 week
+                                        for you to review in your own 4me. TGR Investment will take place over a 4 to 8 week
                                         period. During this period we will keep you notified on any progress during our research.</P>
                                 </div>
                             </div>
@@ -169,13 +162,9 @@ Analytics
                             </div>
                         </section> -->
                         <section class="toggle">
-                            <a class="toggle-title">TGR Brainstorm</a>
+                            <a class="toggle-title">Business</a>
                             <div class="toggle-content" style="text-align: justify">
-                                <p>It is likely that you may find yourself at a stage of your transition journey where you
-                                    know you want to be a part of the great return but are currently struggling to figure out
-                                    how you can get involved. You may be s5ll trying to work out what you can do, how you
-                                    can utilise your skill sets and expertise and how you can contribute towards the
-                                    development of Africa.</p>
+                                <p>At TGR Africa, our goal is to help diaspora entrepreneurs establish successful businesses in Africa.</p>
                                 <a href="{{ route('advisory.brainstorm') }}" class="btn btn-modern btn-dark">Read
                                     more</a>
                             </div>

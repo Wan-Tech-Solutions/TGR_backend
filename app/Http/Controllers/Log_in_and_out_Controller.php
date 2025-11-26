@@ -19,6 +19,7 @@ class Log_in_and_out_Controller extends Controller
         ]);
         $email = $request->email;
         $password = $request->password;
+        /** @noinspection PhpUndefinedClassInspection */
         $now = Carbon::now();
         $todayDate = $now->toDateTimeString();
         $credentials = $request->only('email', 'password');
@@ -47,6 +48,7 @@ class Log_in_and_out_Controller extends Controller
         $user = Auth::user();
         $name = $user->name;
         $email = $user->email;
+        /** @noinspection PhpUndefinedClassInspection */
         $dt = Carbon::now();
         $todayDate = $dt->toDateTimeString();
         $activityLog = [

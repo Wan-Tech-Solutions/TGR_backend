@@ -44,22 +44,47 @@ class ContactUsController extends Controller
     {
         // Validate request data
         $validated = $request->validate([
-            'full_name' => 'required',
+            'full_name' => 'required|string|max:255',
             'email' => 'required|email',
-            'country_of_residence' => 'required',
-            'nationality' => 'required',
-            'message' => 'required',
-            'subject' => 'required',
+            'country_of_residence' => 'required|string|max:255',
+            'nationality' => 'required|string|max:255',
+            'message' => 'required|string|min:10',
+            'subject' => 'required|string|max:255',
         ]);
-        // Save the data to the database
-        ContactUs::create($validated);
-        // Email content
-        $messageContent = $validated;
-        // Send email to admin
-        Mail::to('info@tgrafrica.com')->send(new \App\Mail\ContactUsNotification($messageContent));
-        // Send auto-reply to the user
-        Mail::to($validated['email'])->send(new \App\Mail\AutoReplyNotification($messageContent));
-        return redirect()->route('contact-thank-you-message')->with('success', 'Your message has been sent successfully! We will get back to you soon.');
+
+        try {
+            // Save the data to the database
+            $contact = ContactUs::create($validated);
+
+            // Email content
+            $messageContent = $validated;
+
+            // Try to send email to admin
+            try {
+                Mail::to('info@tgrafrica.com')->send(new \App\Mail\ContactUsNotification($messageContent));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send admin notification: ' . $e->getMessage());
+                // Continue even if admin email fails
+            }
+
+            // Try to send auto-reply to the user
+            try {
+                Mail::to($validated['email'])->send(new \App\Mail\AutoReplyNotification($messageContent));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send user auto-reply: ' . $e->getMessage());
+                // Continue even if user email fails
+            }
+
+            return redirect()->route('contact-thank-you-message')
+                ->with('success', 'Your message has been received successfully! We will get back to you soon.');
+
+        } catch (\Exception $e) {
+            \Log::error('Contact form error: ' . $e->getMessage());
+            
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'An error occurred while processing your request. Please try again later.');
+        }
     }
 
     public function thankyoucontact()

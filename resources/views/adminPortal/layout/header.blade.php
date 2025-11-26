@@ -14,7 +14,7 @@
     />
 
     <!-- Fonts and icons -->
-    <script src="assets/js/plugin/webfont/webfont.min.js"></script>
+    <script src="{{ asset('assets/js/plugin/webfont/webfont.min.js') }}"></script>
     <script>
       WebFont.load({
         google: { families: ["Public Sans:300,400,500,600,700"] },
@@ -25,7 +25,7 @@
             "Font Awesome 5 Brands",
             "simple-line-icons",
           ],
-          urls: ["assets/css/fonts.min.css"],
+          urls: ["{{ asset('assets/css/fonts.min.css') }}"],
         },
         active: function () {
           sessionStorage.fonts = true;
@@ -33,13 +33,16 @@
       });
     </script>
 
+    <!-- Font Awesome Direct Link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
     <!-- CSS Files -->
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="assets/css/plugins.min.css" />
-    <link rel="stylesheet" href="assets/css/kaiadmin.min.css" />
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/plugins.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/kaiadmin.min.css') }}" />
 
     <!-- CSS Just for demo purpose, don't include it in your project -->
-    <link rel="stylesheet" href="assets/css/demo.css" />
+    <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
   </head>
   <body>
     <div class="wrapper">
@@ -118,13 +121,13 @@
                   <span class="badge badge-success">{{$count_blogs}}</span>
                 </a>
               </li>
-              <li class="nav-item">
+              {{-- <li class="nav-item">
                 <a href="{{route('admin.founders')}}">
                   <i class="fas fa-users"></i>
                   <p>Founders</p>
                   <span class="badge badge-success">{{$founder_count}}</span>
                 </a>
-              </li>
+              </li> --}}
               <li class="nav-item">
                 <a href="{{route('administration.contact.response')}}">
                   <i class="fas fa-phone"></i>
@@ -132,11 +135,29 @@
                   <span class="badge badge-success">{{$contact_count}}</span>
                 </a>
               </li>
-              <li class="nav-item">
+              {{-- <li class="nav-item">
                 <a href="{{route('admin.feedbacks')}}">
                   <i class="fas fa-users"></i>
                   <p>Client Feedback</p>
                   <span class="badge badge-success">1</span>
+                </a>
+              </li> --}}
+              <li class="nav-item">
+                <a href="{{route('admin.email.tracking')}}">
+                  <i class="fas fa-paper-plane"></i>
+                  <p>Email Tracking</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{route('admin.email.inbox')}}">
+                  <i class="fas fa-inbox"></i>
+                  <p>Inbox</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{route('admin.email-addresses.index')}}">
+                  <i class="fas fa-envelope"></i>
+                  <p>Email Addresses</p>
                 </a>
               </li>
               <li class="nav-item">
@@ -248,6 +269,7 @@
             </script>
 
               <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+                <!-- Messages Dropdown -->
                 <li class="nav-item topbar-icon dropdown hidden-caret">
                   <a
                     class="nav-link dropdown-toggle"
@@ -259,6 +281,9 @@
                     aria-expanded="false"
                   >
                     <i class="fa fa-envelope"></i>
+                    @if(isset($unread_messages) && $unread_messages > 0)
+                      <span class="notification">{{ $unread_messages }}</span>
+                    @endif
                   </a>
                   <ul
                     class="dropdown-menu messages-notif-box animated fadeIn"
@@ -269,11 +294,30 @@
                         class="dropdown-title d-flex justify-content-between align-items-center"
                       >
                         Mails
+                        @if(isset($unread_messages) && $unread_messages > 0)
+                          <span class="badge badge-primary">{{ $unread_messages }}</span>
+                        @endif
                       </div>
                     </li>
                     <li>
                       <div class="message-notif-scroll scrollbar-outer">
                         <div class="notif-center">
+                          @if(isset($recent_messages) && count($recent_messages) > 0)
+                            @foreach($recent_messages as $message)
+                              <div class="notif-item simpler-notif">
+                                <div class="notif-text">
+                                  <span class="block">
+                                    <strong>{{ $message->subject ?? 'No Subject' }}</strong>
+                                  </span>
+                                  <span class="time">{{ $message->created_at?->diffForHumans() ?? 'Recently' }}</span>
+                                </div>
+                              </div>
+                            @endforeach
+                          @else
+                            <div class="notif-item simpler-notif text-center py-3">
+                              <span class="text-muted">No new messages</span>
+                            </div>
+                          @endif
                         </div>
                       </div>
                     </li>
@@ -284,6 +328,8 @@
                     </li>
                   </ul>
                 </li>
+
+                <!-- Notifications Dropdown -->
                 <li class="nav-item topbar-icon dropdown hidden-caret">
                   <a
                     class="nav-link dropdown-toggle"
@@ -294,21 +340,40 @@
                     aria-haspopup="true"
                     aria-expanded="false"
                   >
-                    <i class="fa fa-users"></i>
-                    <span class="notification">4</span>
+                    <i class="fa fa-bell"></i>
+                    @if(isset($unread_notifications) && $unread_notifications > 0)
+                      <span class="notification">{{ $unread_notifications }}</span>
+                    @endif
                   </a>
                   <ul
                     class="dropdown-menu notif-box animated fadeIn"
                     aria-labelledby="notifDropdown"
                   >
                     <li>
-                      <div class="dropdown-title">
-                        TGR Mail
+                      <div class="dropdown-title d-flex justify-content-between align-items-center">
+                        Notifications
+                        @if(isset($unread_notifications) && $unread_notifications > 0)
+                          <span class="badge badge-warning">{{ $unread_notifications }}</span>
+                        @endif
                       </div>
                     </li>
                     <li>
                       <div class="notif-scroll scrollbar-outer">
                         <div class="notif-center">
+                          @if(isset($recent_notifications) && count($recent_notifications) > 0)
+                            @foreach($recent_notifications as $notif)
+                              <div class="notif-item simpler-notif">
+                                <div class="notif-text">
+                                  <span class="block">{{ $notif->message ?? 'New notification' }}</span>
+                                  <span class="time">{{ $notif->created_at?->diffForHumans() ?? 'Recently' }}</span>
+                                </div>
+                              </div>
+                            @endforeach
+                          @else
+                            <div class="notif-item simpler-notif text-center py-3">
+                              <span class="text-muted">No new notifications</span>
+                            </div>
+                          @endif
                         </div>
                       </div>
                     </li>
@@ -319,6 +384,8 @@
                     </li>
                   </ul>
                 </li>
+
+                <!-- Quick Apps -->
                 <li class="nav-item topbar-icon dropdown hidden-caret">
                   <a
                     class="nav-link"
@@ -362,42 +429,13 @@
                               <span class="text">Notes</span>
                             </div>
                           </a>
-                          {{-- <a class="col-6 col-md-4 p-0" href="#">
-                            <div class="quick-actions-item">
-                              <div
-                                class="avatar-item bg-success rounded-circle"
-                              >
-                                <i class="fas fa-calendar"></i>
-                              </div>
-                              <span class="text">Calendar</span>
-                            </div>
-                          </a> --}}
-                          <!-- <a class="col-6 col-md-4 p-0" href="#">
-                            <div class="quick-actions-item">
-                              <div
-                                class="avatar-item bg-primary rounded-circle"
-                              >
-                                <i class="fas fa-file-invoice-dollar"></i>
-                              </div>
-                              <span class="text">Invoice</span>
-                            </div>
-                          </a>
-                          <a class="col-6 col-md-4 p-0" href="#">
-                            <div class="quick-actions-item">
-                              <div
-                                class="avatar-item bg-secondary rounded-circle"
-                              >
-                                <i class="fas fa-credit-card"></i>
-                              </div>
-                              <span class="text">Payments</span>
-                            </div>
-                          </a> -->
                         </div>
                       </div>
                     </div>
                   </div>
                 </li>
 
+                <!-- User Profile Dropdown -->
                 <li class="nav-item topbar-user dropdown hidden-caret">
                   <a
                     class="dropdown-toggle profile-pic"
@@ -407,14 +445,14 @@
                   >
                     <div class="avatar-sm">
                       <img
-                        src="logo.png"
-                        alt="..."
+                        src="{{ asset('logo.png') }}"
+                        alt="User Avatar"
                         class="avatar-img rounded-circle"
                       />
                     </div>
                     <span class="profile-username">
                       <span class="op-7">Hi,</span>
-                      <span class="fw-bold">SuperAdmin</span>
+                      <span class="fw-bold">{{ auth()->user()->name ?? 'Admin' }}</span>
                     </span>
                   </a>
                   <ul class="dropdown-menu dropdown-user animated fadeIn">
@@ -423,16 +461,16 @@
                         <div class="user-box">
                           <div class="avatar-lg">
                             <img
-                              src="logo.png"
-                              alt="image profile"
+                              src="{{ asset('logo.png') }}"
+                              alt="User Profile"
                               class="avatar-img rounded"
                             />
                           </div>
                           <div class="u-text">
-                            <h4>SuperAdmin</h4>
-                            <p class="text-muted">superadmin@tgrafrica.com</p>
+                            <h4>{{ auth()->user()->name ?? 'Admin User' }}</h4>
+                            <p class="text-muted">{{ auth()->user()->email ?? 'admin@tgrafrica.com' }}</p>
                             <a
-                              href="profile.html"
+                              href="{{ route('admin.profiles') }}"
                               class="btn btn-xs btn-secondary btn-sm"
                               >View Profile</a
                             >
@@ -441,13 +479,17 @@
                       </li>
                       <li>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">My Profile</a>
-                        <a class="dropdown-item" href="#">My Balance</a>
-                        <a class="dropdown-item" href="#">Inbox</a>
+                        <a class="dropdown-item" href="{{ route('admin.my.profile') }}">My Profile</a>
+                        <a class="dropdown-item" href="{{ route('admin.audit.trails') }}">Activity Log</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Account Setting</a>
+                        <a class="dropdown-item" href="{{ route('admin.roles') }}">Settings</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Logout</a>
+                        <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                          Logout
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                          @csrf
+                        </form>
                       </li>
                     </div>
                   </ul>

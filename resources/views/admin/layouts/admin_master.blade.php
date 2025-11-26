@@ -187,7 +187,10 @@
                         Subscribers
                       </a>
                       <a class="dropdown-item" href="{{ route('questionnaires-book-consultations') }}">
-                        Consultations
+                        Consultation Form
+                      </a>
+                      <a class="dropdown-item" href="{{ route('admin.consultations') }}">
+                        Consultation Bookings
                       </a>
                       <a class="dropdown-item" href="{{ route('requested-list') }}">
                         Prospectus Requests

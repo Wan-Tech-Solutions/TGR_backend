@@ -1,0 +1,29 @@
+{
+    "[php]": {
+        "intelephense.analysisStubPath": "./vendor"
+    },
+    "intelephense.compatibility.correctForBaseClassStaticProperties": true,
+    "intelephense.diagnostics.deprecated": true,
+    "intelephense.diagnostics.undefinedTypes": false,
+    "intelephense.exclude": [],
+    "intelephense.format.enable": true,
+    "intelephense.stubs": [
+        "standard",
+        "reflection",
+        "dom",
+        "SPL",
+        "fileinfo",
+        "hash",
+        "filter",
+        "xml",
+        "curl",
+        "session",
+        "pcre",
+        "zip",
+        "gd",
+        "pdo",
+        "soap",
+        "date",
+        "spl"
+    ]
+}

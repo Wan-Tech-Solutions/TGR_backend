@@ -15,7 +15,7 @@ class AdminContactController extends Controller
     //
     public function contact(){
         $count_blogs = Blog::count('id');
-        $contact = ContactUs::orderby('created_at','desc')->get();
+        $contact = ContactUs::orderby('created_at','desc')->paginate(15);
         $contact_count = ContactUs::count('id');
         $founder_count = Founder::count('id');
         $prospectus_count = Prospectus::count('id');

@@ -5,9 +5,21 @@ Contact
 @endsection
 
 @section('content')
+
+<!-- Success/Error Messages -->
 @if (session('success'))
-<div style="color: green;">
-    {{ session('success') }}
+<div class="alert alert-success alert-dismissible fade show" role="alert" style="margin: 20px auto; max-width: 1200px;">
+    <i class="fas fa-check-circle me-2"></i>
+    <strong>Success!</strong> {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
+@if (session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin: 20px auto; max-width: 1200px;">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    <strong>Error!</strong> {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 @endif
 
@@ -40,6 +52,21 @@ Contact
                 <p class="mb-4">Feel free to ask for details, don't save any questions!</p>
                 <form action="{{ route('site-store-contact-us') }}" method="POST">
                     @csrf
+                    
+                    <!-- Validation Errors Display -->
+                    @if ($errors->any())
+                    <div class="alert alert-warning alert-dismissible fade show mt-4" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Please fix the following errors:</strong>
+                        <ul class="mb-0 mt-2">
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    @endif
+
                     <div class="contact-form-success alert alert-success d-none mt-4">
                         <strong>Success!</strong> Your message has been sent to us.
                     </div>

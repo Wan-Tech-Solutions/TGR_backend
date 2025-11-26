@@ -8,7 +8,7 @@ use App\Models\Blog;
 use App\Models\ContactUs;
 use App\Models\Founder;
 use App\Models\Prospectus;
-use App\Models\Bookconsultation ;
+use App\Models\Consultation;
 use App\Models\activityLog;
 use App\Models\Subscription;
 
@@ -22,10 +22,10 @@ class AdminHomeController extends Controller
         $contact_count = ContactUs::count('id');
         $founder_count = Founder::count('id');
         $prospectus_count = Prospectus::count('id');
-        $consultation_count = Bookconsultation::count('id');
+        $consultation_count = Consultation::count();
         $top_blog = Blog::take(3)->get();
         $user_activity = activityLog::orderby('created_at','desc')->take(6)->get();
-        $consultation_dates = Bookconsultation::take(3)->get();
+        $consultation_dates = Consultation::orderBy('created_at', 'desc')->take(3)->get();
         $subscriptions = Subscription::with('user','seminar')->orderby('created_at','desc')->take(3)->get();
 
 

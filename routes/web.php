@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\missioncontroller;
 use App\Http\Controllers\Admin\purposecontroller;
 use App\Http\Controllers\Admin\SiteConfigurationController;
 use App\Http\Controllers\Admin\visioncontroller;
+use App\Http\Controllers\Admin\ConsultationAdminController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -51,6 +52,8 @@ use App\Http\Controllers\Admin\AdminChatController;
 use App\Http\Controllers\Admin\AdminCalenderController;
 use App\Http\Controllers\Admin\AdminPhoneController;
 use App\Http\Controllers\Admin\AdminNoteController;
+use App\Http\Controllers\Admin\AdminIncomingEmailController;
+use App\Http\Controllers\Admin\AdminEmailAddressController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\EventController;
 
@@ -87,12 +90,20 @@ Route::get('admin-subscribers', [AdminSubscribersController::class, 'subscribers
 
 //Consultations Here
 Route::get('admin-consultations', [AdminConsultationsController::class, 'consultations'])->name('admin.consultations');
+Route::get('admin-consultations/rebook-reminders', [AdminConsultationsController::class, 'rebookReminders'])->name('admin.consultations.rebook-reminders');
+Route::post('admin-consultations/{id}/send-rebook', [AdminConsultationsController::class, 'sendRebookReminder'])->name('admin.consultations.send-rebook');
+Route::get('admin-consultations/{consultation}', [AdminConsultationsController::class, 'show'])->name('admin.consultations.show');
+Route::patch('admin-consultations/{consultation}/status', [AdminConsultationsController::class, 'updateStatus'])->name('admin.consultations.update-status');
 
 //Prospectus Requests Here
 Route::get('admin-prospectus-requests', [AdminProspectusController::class, 'prospectus_requests'])->name('admin.prospectus.requests');
 
 //Blogs Here
 Route::get('admin-blogs', [AdminBlogsController::class, 'blogs'])->name('admin.blogs');
+Route::post('admin-blogs/store', [AdminBlogsController::class, 'store'])->name('admin.blogs.store');
+Route::get('admin-blogs/{uuid}/edit', [AdminBlogsController::class, 'edit'])->name('admin.blogs.edit');
+Route::put('admin-blogs/{uuid}', [AdminBlogsController::class, 'update'])->name('admin.blogs.update');
+Route::delete('admin-blogs/{uuid}', [AdminBlogsController::class, 'destroy'])->name('admin.blogs.destroy');
 
 //Feedback Here
 Route::get('admin-feedbacks', [AdminFeedBackController::class, 'feedbacks'])->name('admin.feedbacks');
@@ -105,6 +116,7 @@ Route::get('admin-roles', [AdminRolesController::class, 'roles'])->name('admin.r
 
 //Profiles Here
 Route::get('admin-profiles', [AdminProfilesController::class, 'profiles'])->name('admin.profiles');
+Route::get('my-profile', [AdminProfilesController::class, 'myProfile'])->name('admin.my.profile');
 
 //Password Resets
 Route::get('admin-password-reset', [AdminPasswordResetsController::class, 'password_reset'])->name('admin.password.reset');
@@ -144,6 +156,41 @@ Route::post('/add-contacts', [AdminPhoneController::class, 'store']);
 Route::get('tgr-note', [AdminNoteController::class, 'tgr_note'])->name('admin.tgr.notes');
 Route::get('/notes', [AdminNoteController::class, 'index'])->name('notes.index');
 Route::post('/add-notes', [AdminNoteController::class, 'store'])->name('notes.store');
+
+//Email Compose
+Route::get('admin-email-compose', [App\Http\Controllers\Admin\AdminEmailComposeController::class, 'compose'])->name('admin.email.compose');
+Route::post('admin-email-send', [App\Http\Controllers\Admin\AdminEmailComposeController::class, 'send'])->name('admin.email.send');
+
+//Email Tracking (Outgoing)
+Route::get('admin-email-tracking', [App\Http\Controllers\Admin\AdminEmailTrackingController::class, 'index'])->name('admin.email.tracking');
+Route::get('admin-email-tracking/{uuid}', [App\Http\Controllers\Admin\AdminEmailTrackingController::class, 'show'])->name('admin.email.details');
+Route::post('admin-email-tracking/{uuid}/retry', [App\Http\Controllers\Admin\AdminEmailTrackingController::class, 'retry'])->name('admin.email.retry');
+Route::delete('admin-email-tracking/{uuid}', [App\Http\Controllers\Admin\AdminEmailTrackingController::class, 'destroy'])->name('admin.email.destroy');
+
+//Inbox (Incoming Emails)
+Route::get('admin-email-inbox', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'index'])->name('admin.email.inbox');
+Route::get('admin-email-inbox/{uuid}', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'show'])->name('admin.email.inbox.show');
+Route::post('admin-email-inbox/{uuid}/mark-read', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'markAsRead'])->name('admin.email.inbox.mark-read');
+Route::post('admin-email-inbox/{uuid}/mark-unread', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'markAsUnread'])->name('admin.email.inbox.mark-unread');
+Route::post('admin-email-inbox/{uuid}/toggle-starred', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'toggleStarred'])->name('admin.email.inbox.toggle-starred');
+Route::post('admin-email-inbox/{uuid}/move-trash', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'moveToTrash'])->name('admin.email.inbox.move-trash');
+Route::post('admin-email-inbox/{uuid}/restore-trash', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'restoreFromTrash'])->name('admin.email.inbox.restore-trash');
+Route::post('admin-email-inbox/{uuid}/mark-spam', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'markAsSpam'])->name('admin.email.inbox.mark-spam');
+Route::delete('admin-email-inbox/{uuid}', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'destroy'])->name('admin.email.inbox.destroy');
+Route::post('admin-email-inbox/bulk/mark-read', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'bulkMarkAsRead'])->name('admin.email.inbox.bulk-read');
+Route::post('admin-email-inbox/bulk/move-trash', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'bulkMoveToTrash'])->name('admin.email.inbox.bulk-trash');
+Route::post('admin-email-inbox/empty-trash', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'emptyTrash'])->name('admin.email.inbox.empty-trash');
+
+// Email Addresses Management
+Route::get('admin-email-addresses', [AdminEmailAddressController::class, 'index'])->name('admin.email-addresses.index');
+Route::get('admin-email-addresses/create', [AdminEmailAddressController::class, 'create'])->name('admin.email-addresses.create');
+Route::post('admin-email-addresses', [AdminEmailAddressController::class, 'store'])->name('admin.email-addresses.store');
+Route::get('admin-email-addresses/{emailAddress}/edit', [AdminEmailAddressController::class, 'edit'])->name('admin.email-addresses.edit');
+Route::put('admin-email-addresses/{emailAddress}', [AdminEmailAddressController::class, 'update'])->name('admin.email-addresses.update');
+Route::post('admin-email-addresses/{emailAddress}/toggle-active', [AdminEmailAddressController::class, 'toggleActive'])->name('admin.email-addresses.toggle-active');
+Route::post('admin-email-addresses/{emailAddress}/toggle-auto-sync', [AdminEmailAddressController::class, 'toggleAutoSync'])->name('admin.email-addresses.toggle-auto-sync');
+Route::delete('admin-email-addresses/{emailAddress}', [AdminEmailAddressController::class, 'destroy'])->name('admin.email-addresses.destroy');
+
 });
 //Michael Updates End Here
 
@@ -242,6 +289,8 @@ Route::group(['prefix' => 'features/', 'as' => 'features.'], function () {
     Route::get('consultation', function () {
         return view('website.features.consult');
     })->name('consult');
+    Route::get('consultation/book', [\App\Http\Controllers\ConsultationController::class, 'create'])->name('consult.book');
+    Route::post('consultation/store', [\App\Http\Controllers\ConsultationController::class, 'store'])->name('consult.store');
     Route::get('thank-you', function () {
         return view('website.features.thankyou');
     })->name('thank_you');
@@ -304,13 +353,14 @@ Route::prefix('contact-us')->group(function () {
 Route::prefix('admin')->name('admin.')->group(function () {
 
     
+    // Old blog routes - replaced with new AdminBlogsController routes in admin portal
     // Route::resource('blogs', BlogController::class);
-    Route::get('/', [BlogController::class, 'index'])->name('blogs.index');
-    Route::get('/add', [BlogController::class, 'create'])->name('blogs.create');
-    Route::post('/store', [BlogController::class, 'store'])->name('blogs.store');
-    Route::get('/edit/{uuid}', [BlogController::class, 'edit'])->name('blogs.edit');
-    Route::post('/update', [BlogController::class, 'update'])->name('blogs.update');
-    Route::get('/delete/{uuid}', [BlogController::class, 'delete'])->name('blogs.destroy');
+    // Route::get('/', [BlogController::class, 'index'])->name('blogs.index');
+    // Route::get('/add', [BlogController::class, 'create'])->name('blogs.create');
+    // Route::post('/store', [BlogController::class, 'store'])->name('blogs.store');
+    // Route::get('/edit/{uuid}', [BlogController::class, 'edit'])->name('blogs.edit');
+    // Route::post('/update', [BlogController::class, 'update'])->name('blogs.update');
+    // Route::get('/delete/{uuid}', [BlogController::class, 'delete'])->name('blogs.destroy');
 });
 Route::prefix('site-configuration')->group(function () {
     Route::prefix('prospectus')->group(function () {

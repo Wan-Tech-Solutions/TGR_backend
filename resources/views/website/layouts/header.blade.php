@@ -73,11 +73,11 @@
                                                         href="{{ route('features.consult') }}">Book a Consultation</a>
                                                 </li>
                                                 <li> <a class="dropdown-item"
-                                                        href="{{ route('advisory.brainstorm') }}">TGR Brainstorm</a>
+                                                        href="{{ route('advisory.brainstorm') }}">Business</a>
                                                 </li>
 
                                                 <li> <a class="dropdown-item"
-                                                        href="{{ route('advisory.analytic') }}">TGR Analytics</a>
+                                                        href="{{ route('advisory.analytic') }}">Investment</a>
                                                 </li>
                                             </ul>
                                         </li>
