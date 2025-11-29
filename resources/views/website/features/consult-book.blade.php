@@ -7,7 +7,6 @@
 @section('content')
     @php
         $countryDialCodes = include resource_path('views/website/features/data/country-dial-codes.php');
-        $questionnaire = include resource_path('views/website/features/data/questionnaire.php');
         $availability = $availability ?? [];
         $dailyCapacity = $dailyCapacity ?? \App\Models\Consultation::DAILY_CAPACITY;
         $hourlyRate = $hourlyRate ?? \App\Models\Consultation::HOURLY_RATE;
@@ -20,8 +19,6 @@
         $client_nationality = old('client_nationality') ?? ($client_nationality ?? null);
         $country_of_residence = old('country_of_residence') ?? ($country_of_residence ?? null);
         $rebook_of = old('rebook_of') ?? ($rebook_of ?? null);
-        // Use the prefilled questionnaire responses passed from controller for rebook
-        $originalQuestionnaire = $prefillQuestionnaire ?? [];
         try {
             $selectedDateFormatted = $selectedDate
                 ? \Illuminate\Support\Carbon::parse($selectedDate)->format('l, M j, Y')
@@ -164,37 +161,6 @@
 
                             <div class="consult-card__divider"></div>
 
-                            <div class="mb-3">
-                                <h3 class="h5 fw-bold text-dark mb-2">Self-Assessment</h3>
-                                <p class="text-muted small mb-3">Rate yourself from 1 (low) to 10 (high). Your responses help
-                                    us understand your readiness and the type of support you need.</p>
-                            </div>
-
-                            <div class="row g-3">
-                                @foreach ($questionnaire as $index => $question)
-                                    <div class="col-sm-6">
-                                        <label class="form-label small fw-semibold text-muted"
-                                            for="question{{ $index }}">{{ $question }}</label>
-                                        <select class="form-select" id="question{{ $index }}"
-                                            name="questionnaire[{{ $index }}]" required>
-                                            @for ($i = 1; $i <= 10; $i++)
-                                                @php
-                                                    // Get the original answer if reboking, else use old value, else default to 5
-                                                    $selectedValue = (int) old("questionnaire.$index", $originalQuestionnaire[$index] ?? 5);
-                                                @endphp
-                                                <option value="{{ $i }}"
-                                                    @selected($selectedValue === $i)>{{ $i }}</option>
-                                            @endfor
-                                        </select>
-                                        @error("questionnaire.$index")
-                                            <div class="text-danger small mt-1">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                @endforeach
-                            </div>
-
-                            <div class="consult-card__divider mt-4 mb-4"></div>
-
                             <div class="row g-3 align-items-center">
                                 <div class="col-md-6">
                                     <label class="form-label text-uppercase text-2 fw-semibold"
@@ -223,6 +189,18 @@
                             <input type="hidden" name="selected_date" id="selected_date"
                                 value="{{ $selectedDate }}">
                             <input type="hidden" name="rebook_of" value="{{ $rebook_of }}">
+
+                            <div class="mb-4">
+                                <label class="form-label text-uppercase text-2 fw-semibold d-block mb-2"
+                                    for="consultation_interest">Please Specify Your Consultation Interest</label>
+                                <textarea class="form-control form-control-lg" id="consultation_interest"
+                                    name="consultation_interest" rows="4" placeholder="Tell us what you'd like to discuss during your consultation..."
+                                    maxlength="1000">{{ old('consultation_interest') }}</textarea>
+                                <small class="text-muted d-block mt-1">Share your specific interests, questions, or goals. This helps us prepare better for your consultation (Max 1000 characters).</small>
+                                @error('consultation_interest')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
 
                             <div class="alert alert-warning d-flex align-items-start gap-2 rounded-3 mt-4 mb-3 small">
                                 <i class="fas fa-info-circle text-secondary mt-1"></i>

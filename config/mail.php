@@ -36,7 +36,7 @@ return [
     'mailers' => [
         'smtp' => [
             'transport' => 'smtp',
-            'host' => env('MAIL_HOST', 'premium221.web-hosting.com'),
+            'host' => env('MAIL_HOST', 'business159.web-hosting.com'),
             'port' => env('MAIL_PORT', 465),
             'encryption' => env('MAIL_ENCRYPTION', 'ssl'),
             'username' => env('MAIL_USERNAME', 'info@tgrafrica.com'),
@@ -49,7 +49,7 @@ return [
 
         'investors' => [
             'transport' => 'smtp',
-            'host' => env('INVESTOR_MAIL_HOST', 'premium221.web-hosting.com'),
+            'host' => env('INVESTOR_MAIL_HOST', 'business159.web-hosting.com'),
             'port' => env('INVESTOR_MAIL_PORT', 465),
             'encryption' => env('INVESTOR_MAIL_ENCRYPTION', 'ssl'),
             'username' => env('INVESTOR_MAIL_USERNAME', 'investorscommunity@tgrafrica.com'),

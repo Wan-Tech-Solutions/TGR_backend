@@ -19,7 +19,7 @@ class AdminRolesController extends Controller
         $contact_count = ContactUs::count('id');
         $founder_count = Founder::count('id');
         $prospectus_count = Prospectus::count('id');
-        $roles = Role::orderby('created_at','desc')->get();
+        $roles = Role::orderby('created_at','desc')->paginate(15);
 
 
         return view('adminPortal.roles.roles',compact('count_blogs','contact_count','founder_count','prospectus_count','roles'));

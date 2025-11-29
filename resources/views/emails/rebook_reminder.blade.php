@@ -132,7 +132,7 @@
             </div>
 
             <h3>How to Reschedule:</h3>
-            <p>Click the button below to select a new date and time for your consultation. Your assessment responses have been saved, so you won't need to fill out the questionnaire again.</p>
+            <p>Click the button below to select a new date and time for your consultation.</p>
 
             <center>
                 <a href="{{ $bookingUrl }}" class="cta-button">Reschedule Your Consultation</a>

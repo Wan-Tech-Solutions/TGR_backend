@@ -37,7 +37,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-primary bg-opacity-10 text-white rounded-2 p-3 me-3">
                                 <i class="fas fa-envelope fa-lg"></i>
                             </div>
                             <div>
@@ -52,7 +52,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-success bg-opacity-10 text-success rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-success bg-opacity-10 text-white rounded-2 p-3 me-3">
                                 <i class="fas fa-check-circle fa-lg"></i>
                             </div>
                             <div>
@@ -67,7 +67,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-warning bg-opacity-10 text-warning rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-warning bg-opacity-10 text-white rounded-2 p-3 me-3">
                                 <i class="fas fa-hourglass-half fa-lg"></i>
                             </div>
                             <div>
@@ -82,7 +82,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-danger bg-opacity-10 text-danger rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-danger bg-opacity-10 text-white rounded-2 p-3 me-3">
                                 <i class="fas fa-times-circle fa-lg"></i>
                             </div>
                             <div>
@@ -123,7 +123,7 @@
                         <p class="text-muted small mb-0">All email communications with delivery status</p>
                     </div>
                     <div class="d-flex gap-2">
-                        <a href="{{ route('admin.email.tracking') }}" class="btn btn-sm btn-outline-secondary {{ !$status ? 'active' : '' }}">
+                        <a href="{{ route('admin.email.tracking') }}" class="btn btn-sm btn-outline-black {{ !$status ? 'active' : '' }}">
                             <i class="fas fa-list me-1"></i> All
                         </a>
                         <a href="{{ route('admin.email.tracking', ['status' => 'sent']) }}" class="btn btn-sm btn-outline-success {{ $status === 'sent' ? 'active' : '' }}">

@@ -30,22 +30,42 @@ class ProspectusRequestController extends Controller
     }
     public function store(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-        ]);
+        try {
+            $request->validate([
+                'email' => 'required|email',
+            ]);
 
-        // Save the email to the database
-        $prospectusRequest = new ProspectusRequest();
-        $prospectusRequest->email = $request->email;
-        $prospectusRequest->save();
+            // Save the email to the database
+            $prospectusRequest = new ProspectusRequest();
+            $prospectusRequest->email = $request->email;
+            $prospectusRequest->save();
 
-        // Define the PDF URL
-        // $pdfUrl = asset('upload/prospectus/Investors_Prospectus.pdf');
-        $pdfUrl = url('upload/prospectus/Investors_Prospectus.pdf');
-        // Send the email with the PDF link
-        Mail::mailer('investors')->to($request->email)->send(new ProspectusMail($request->email, $pdfUrl));
+            // Get the latest published prospectus
+            $prospectus = \App\Models\Prospectus::where('is_published', true)
+                ->latest('created_at')
+                ->first();
 
-        return redirect()->back()->with('success', 'Prospectus PDF link sent successfully!');
+            if (!$prospectus || !$prospectus->prospectus_file) {
+                \Log::warning('No published prospectus found for email: ' . $request->email);
+                return redirect()->back()->with('error', 'No prospectus available at the moment. Please try again later.');
+            }
+
+            // Define the PDF URL from the new storage location
+            $pdfUrl = asset('prospectus/' . $prospectus->prospectus_file);
+            
+            \Log::info('Sending prospectus to: ' . $request->email . ', File: ' . $prospectus->prospectus_file);
+            
+            // Send the email with the PDF link
+            Mail::mailer('investors')->to($request->email)->send(new ProspectusMail($request->email, $pdfUrl));
+
+            return redirect()->back()->with('success', 'Prospectus PDF link sent successfully!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error in prospectus request');
+            return redirect()->back()->withErrors($e->errors());
+        } catch (\Exception $e) {
+            \Log::error('ProspectusRequestController error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while processing your request. Please try again.');
+        }
     }
 
     // public function store(Request $request)

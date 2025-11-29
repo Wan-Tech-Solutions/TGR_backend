@@ -263,7 +263,6 @@
             <thead class="table-light">
               <tr>
                 <th class="ps-4">Client</th>
-                <th>Assessment Score</th>
                 <th>Status</th>
                 <th>Payment</th>
                 <th>Country</th>
@@ -288,26 +287,6 @@
                         <div class="text-muted small">{{ $item->dial_code }} {{ $item->phone }}</div>
                       </div>
                     </div>
-                  </td>
-                  <td>
-                    @if($item->assessment_percentage)
-                      <div class="d-flex align-items-center">
-                        <div class="progress me-2" style="width: 60px; height: 6px;">
-                          <div class="progress-bar @if($item->assessment_percentage >= 70) bg-success 
-                                                  @elseif($item->assessment_percentage >= 50) bg-warning 
-                                                  @else bg-danger @endif" 
-                               role="progressbar" style="width: {{ $item->assessment_percentage }}%" 
-                               aria-valuenow="{{ $item->assessment_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <span class="fw-semibold @if($item->assessment_percentage >= 70) text-success 
-                                                @elseif($item->assessment_percentage >= 50) text-warning 
-                                                @else text-danger @endif">
-                          {{ number_format($item->assessment_percentage, 1) }}%
-                        </span>
-                      </div>
-                    @else
-                      <span class="text-muted small">N/A</span>
-                    @endif
                   </td>
                   <td>
                     <span class="badge rounded-pill py-2 px-3 text-uppercase fw-semibold text-white

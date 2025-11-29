@@ -28,10 +28,9 @@ class StoreConsultationRequest extends FormRequest
             'client_phone' => ['required', 'string', 'regex:/^\d{9}$/'],
             'client_nationality' => ['nullable', 'string', 'max:255'],
             'country_of_residence' => ['required', 'string', 'max:255'],
+            'consultation_interest' => ['nullable', 'string', 'max:1000'],
             'consultation_hours' => ['required', 'integer', 'min:1', 'max:4'],
             'selected_date' => ['required', 'date', 'after_or_equal:today'],
-            'questionnaire' => ['required', 'array', 'size:34'],
-            'questionnaire.*' => ['required', 'integer', 'min:1', 'max:10'],
             'rebook_of' => ['nullable', 'uuid'],
         ];
     }
@@ -52,12 +51,7 @@ class StoreConsultationRequest extends FormRequest
             'consultation_hours.max' => 'You can request a maximum of 4 hours.',
             'selected_date.required' => 'Please select a consultation date.',
             'selected_date.after_or_equal' => 'You must select a date that is today or in the future.',
-            'questionnaire.required' => 'Please complete all assessment questions.',
-            'questionnaire.size' => 'You must answer all 34 assessment questions.',
-            'questionnaire.*.required' => 'All assessment questions must be answered.',
-            'questionnaire.*.integer' => 'Assessment responses must be whole numbers.',
-            'questionnaire.*.min' => 'Assessment responses must be between 1 and 10.',
-            'questionnaire.*.max' => 'Assessment responses must be between 1 and 10.',
+            'consultation_interest.max' => 'Your consultation interest must not exceed 1000 characters.',
         ];
     }
 }

@@ -186,9 +186,6 @@
                       <a class="dropdown-item" href="{{ route('users-subscribed-semiars') }}">
                         Subscribers
                       </a>
-                      <a class="dropdown-item" href="{{ route('questionnaires-book-consultations') }}">
-                        Consultation Form
-                      </a>
                       <a class="dropdown-item" href="{{ route('admin.consultations') }}">
                         Consultation Bookings
                       </a>

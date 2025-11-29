@@ -46,7 +46,7 @@ return [
     'accounts' => [
 
         'default' => [
-            'host'          => env('IMAP_HOST', 'premium221.web-hosting.com'),
+            'host'          => env('IMAP_HOST', 'business159.web-hosting.com'),
             'port'          => env('IMAP_PORT', 993),
             'encryption'    => env('IMAP_ENCRYPTION', 'ssl'),
             'validate_cert' => env('IMAP_VALIDATE_CERT', false),

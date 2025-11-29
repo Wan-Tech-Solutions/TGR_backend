@@ -123,9 +123,7 @@
                                         <p>All you need to do is choose a date and time which suits you. To ensure we can
                                             give you
                                             the best advice and provide you with relevant support that caters to your unique
-                                            circumstances and needs, you will first need to complete a short questionnaire.
-                                            This is
-                                            designed to evaluate how ready you are to join the great return.</p>
+                                            circumstances and needs. Our team is dedicated to supporting your journey back home.</p>
                                     </div>
                                 </div>
                             </div>

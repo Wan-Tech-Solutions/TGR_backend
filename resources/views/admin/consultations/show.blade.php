@@ -161,23 +161,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @php
-                                        $questions = include resource_path('views/website/features/data/questionnaire.php');
-                                        $responses = $consultation->questionnaire ?? [];
-                                    @endphp
-                                    @foreach($questions as $index => $question)
-                                        <tr>
-                                            <td>{{ $index + 1 }}</td>
-                                            <td>{{ $question }}</td>
-                                            <td class="text-center">
-                                                <strong>
-                                                    <span class="badge badge-primary" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
-                                                        {{ $responses[$index] ?? 'N/A' }}/10
-                                                    </span>
-                                                </strong>
-                                            </td>
-                                        </tr>
-                                    @endforeach
                                 </tbody>
                             </table>
                         </div>

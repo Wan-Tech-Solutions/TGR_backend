@@ -1,9 +1,5 @@
 @include('adminPortal.layout.header')
 
-<?php
-$questionnaire = include resource_path('views/website/features/data/questionnaire.php');
-?>
-
 <div class="container-fluid px-4">
     <div class="page-inner py-4">
         
@@ -148,143 +144,25 @@ $questionnaire = include resource_path('views/website/features/data/questionnair
                     </div>
                 </div>
 
-                <!-- Assessment Summary Card -->
+                <!-- Consultation Interest Card -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white border-0 pb-0 pt-4 px-4">
                         <h5 class="card-title fw-bold text-dark mb-1">
-                            <i class="fas fa-chart-line me-2 text-primary"></i>Assessment Summary
+                            <i class="fas fa-comment-dots me-2 text-primary"></i>Consultation Interest
                         </h5>
-                        <p class="text-muted small mb-0">Client readiness evaluation</p>
+                        <p class="text-muted small mb-0">Client's expressed interests and goals</p>
                     </div>
                     <div class="card-body px-4 pb-4">
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-4">
-                                <div class="stat-card text-center p-3 border rounded-2">
-                                    <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 48px; height: 48px;">
-                                        <i class="fas fa-star text-white"></i>
-                                    </div>
-                                    <p class="text-muted small fw-semibold mb-1">Total Score</p>
-                                    <h4 class="fw-bold text-dark mb-0">
-                                        {{ $consultation->assessment_score }}<span class="small text-muted">/340</span>
-                                    </h4>
-                                </div>
+                        @if ($consultation->consultation_interest)
+                            <div class="bg-light rounded-2 p-3 border-start border-primary border-4">
+                                <p class="text-dark mb-0 lh-lg">{{ nl2br(e($consultation->consultation_interest)) }}</p>
                             </div>
-                            <div class="col-md-4">
-                                <div class="stat-card text-center p-3 border rounded-2">
-                                    <div class="stat-icon bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 48px; height: 48px;">
-                                        <i class="fas fa-percentage text-white"></i>
-                                    </div>
-                                    <p class="text-muted small fw-semibold mb-1">Readiness %</p>
-                                    <h4 class="fw-bold text-dark mb-0">{{ number_format($consultation->assessment_percentage, 1) }}%</h4>
-                                </div>
+                        @else
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-2x mb-2 opacity-50"></i>
+                                <p class="mb-0">No consultation interest provided</p>
                             </div>
-                            <div class="col-md-4">
-                                <div class="stat-card text-center p-3 border rounded-2">
-                                    <div class="stat-icon bg-info bg-opacity-10 text-info rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 48px; height: 48px;">
-                                        <i class="fas fa-chart-bar text-white"></i>
-                                    </div>
-                                    <p class="text-muted small fw-semibold mb-1">Readiness Level</p>
-                                    <h4 class="fw-bold mb-0">
-                                        @if ($consultation->assessment_percentage >= 70)
-                                            <span class="badge bg-success text-white border-0 px-3 py-2">Highly Ready</span>
-                                        @elseif($consultation->assessment_percentage >= 50)
-                                            <span class="badge bg-warning text-white border-0 px-3 py-2">Moderately Ready</span>
-                                        @else
-                                            <span class="badge bg-danger text-white border-0 px-3 py-2">Needs Development</span>
-                                        @endif
-                                    </h4>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Assessment Progress Bar -->
-                        <div class="progress-section">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="text-muted small fw-semibold">Assessment Completion</span>
-                                <span class="text-dark fw-bold">{{ number_format($consultation->assessment_percentage, 1) }}%</span>
-                            </div>
-                            <div class="progress" style="height: 12px;">
-                                <div class="progress-bar @if ($consultation->assessment_percentage >= 70) bg-success 
-                                                        @elseif($consultation->assessment_percentage >= 50) bg-warning 
-                                                        @else bg-danger @endif" 
-                                     role="progressbar" 
-                                     style="width: {{ $consultation->assessment_percentage }}%"
-                                     aria-valuenow="{{ $consultation->assessment_percentage }}" 
-                                     aria-valuemin="0" 
-                                     aria-valuemax="100">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Assessment Responses Card -->
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white border-0 pb-0 pt-4 px-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="card-title fw-bold text-dark mb-1">
-                                    <i class="fas fa-list-check me-2 text-primary"></i>Assessment Responses
-                                </h5>
-                                <p class="text-muted small mb-0">Detailed question-by-question breakdown</p>
-                            </div>
-                            <span class="badge bg-light text-dark border px-3 py-2">34 Questions</span>
-                        </div>
-                    </div>
-                    <div class="card-body px-0 pb-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th class="ps-4" style="width: 8%">#</th>
-                                        <th style="width: 67%">Question</th>
-                                        <th style="width: 25%" class="text-center">Score</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($consultation->questionnaire as $index => $score)
-                                        <tr>
-                                            <td class="ps-4">
-                                                <span class="badge bg-light text-dark rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
-                                                    {{ $index + 1 }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span class="text-dark">{{ $questionnaire[$index] ?? 'Question ' . ($index + 1) }}</span>
-                                            </td>
-                                            <td class="text-center">
-                                                <div class="d-flex align-items-center justify-content-center">
-                                                    <div class="progress me-3" style="width: 80px; height: 6px;">
-                                                        <div class="progress-bar @if ($score >= 7) bg-success 
-                                                                                @elseif($score >= 5) bg-warning 
-                                                                                @else bg-danger @endif" 
-                                                             role="progressbar" 
-                                                             style="width: {{ $score * 10 }}%"
-                                                             aria-valuenow="{{ $score }}" 
-                                                             aria-valuemin="0" 
-                                                             aria-valuemax="10">
-                                                        </div>
-                                                    </div>
-                                                    <span class="badge rounded-pill @if ($score >= 7) bg-success 
-                                                                                   @elseif($score >= 5) bg-warning 
-                                                                                   @else bg-danger @endif 
-                                                                                   border-0 fw-bold px-3 text-white">
-                                                        {{ $score }}/10
-                                                    </span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="3" class="text-center text-muted py-5">
-                                                <i class="fas fa-inbox fa-2x mb-3"></i>
-                                                <p class="mb-0">No assessment data available</p>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
+                        @endif
                     </div>
                 </div>
 

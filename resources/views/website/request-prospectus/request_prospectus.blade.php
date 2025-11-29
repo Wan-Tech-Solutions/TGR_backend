@@ -93,13 +93,22 @@ Request Prospectus
                                     <div class="mb-3">
                                         <label for="emailInput" class="form-label text-white">Enter your Email address to download</label>
                                         <input type="email" name="email" class="form-control" id="emailInput"
-                                            placeholder="Enter your email">
+                                            placeholder="Enter your email" required>
                                     </div>
                                     @error('email')
                                     <span class="badge badge-danger">{{ $message }}</span>
                                     @enderror
-                                    <button type="submit" class="btn btn-danger" style="">Receive</button>
+                                    <button type="submit" class="btn btn-danger" id="submitBtn">Receive</button>
                                 </form>
+                                @if ($errors->any())
+                                    <div class="alert alert-danger mt-3">
+                                        <ul class="mb-0">
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -128,6 +137,17 @@ Request Prospectus
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        const prospectusForm = document.getElementById('prospectusForm');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        if (prospectusForm) {
+            prospectusForm.addEventListener('submit', function(e) {
+                // Disable button to prevent double submission
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'Sending...';
+            });
+        }
+        
         // Check if there is a success message in the session and the modal element exists
         @if(session('success'))
         const successModalElement = document.getElementById('successModal');

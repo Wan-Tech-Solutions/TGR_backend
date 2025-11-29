@@ -23,16 +23,9 @@ class ConsultationController extends Controller
         // Prefill parameters from rebook link or manual population
         $rebook_of = request()->query('rebook_of');
         $originalConsultation = null;
-        $prefillQuestionnaire = [];
         
         if ($rebook_of) {
             $originalConsultation = Consultation::find($rebook_of);
-            // Convert questionnaire array to indexed array for prefilling
-            if ($originalConsultation && $originalConsultation->questionnaire) {
-                $prefillQuestionnaire = is_array($originalConsultation->questionnaire) 
-                    ? $originalConsultation->questionnaire 
-                    : [];
-            }
         }
 
         $prefillParams = [
@@ -45,7 +38,6 @@ class ConsultationController extends Controller
             'selectedDate' => request()->query('selected_date'),
             'rebook_of' => $rebook_of,
             'selectedHours' => $originalConsultation?->consultation_hours ?? 1,
-            'prefillQuestionnaire' => $prefillQuestionnaire,
         ];
 
         $bookings = Consultation::query()
@@ -72,12 +64,6 @@ class ConsultationController extends Controller
         $data = $request->validated();
         /** @noinspection PhpUndefinedClassInspection */
         $scheduledDate = Carbon::parse($data['selected_date'])->startOfDay()->toDateString();
-
-        /** @var array<int, int> $questionnaire */
-        $questionnaire = collect($data['questionnaire'] ?? [])
-            ->map(fn ($value) => (int) $value)
-            ->values()
-            ->all();
 
         // Check if this is a rebook
         $parentConsultation = null;
@@ -127,7 +113,7 @@ class ConsultationController extends Controller
                 'phone' => $data['client_phone'],
                 'nationality' => $data['client_nationality'] ?? null,
                 'country_of_residence' => $data['country_of_residence'],
-                'questionnaire' => $questionnaire,
+                'consultation_interest' => $data['consultation_interest'] ?? null,
                 'consultation_hours' => (int) $data['consultation_hours'],
                 'scheduled_for' => $scheduledDate,
                 'quoted_amount' => $quotedAmount,

@@ -29,6 +29,10 @@ class Prospectus extends Model implements Auditable
      */
     protected $fillable = [
         'prospectus',
+        'prospectus_title',
+        'prospectus_file',
+        'prospectus_description',
+        'is_published',
     ];
 
     /**

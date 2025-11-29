@@ -23,7 +23,6 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProspectusController;
 use App\Http\Controllers\ProspectusRequestController;
-use App\Http\Controllers\QuestionnaireController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\RolesAndPermissionController;
 use App\Http\Controllers\SeminarController;
@@ -110,6 +109,8 @@ Route::get('admin-feedbacks', [AdminFeedBackController::class, 'feedbacks'])->na
 
 //Prospectus Here
 Route::get('admin-prospectus', [AdminProspectusController::class, 'prospectus'])->name('admin.prospectus');
+Route::post('admin-prospectus', [AdminProspectusController::class, 'store'])->name('admin.prospectus.store');
+Route::delete('admin-prospectus/{id}', [AdminProspectusController::class, 'destroy'])->name('admin.prospectus.destroy');
 
 //Roles Here
 Route::get('admin-roles', [AdminRolesController::class, 'roles'])->name('admin.roles');
@@ -333,8 +334,6 @@ Route::post('news/comment/{comment}/reply', [CommentController::class, 'reply'])
 Route::post('news/{uuid}/comment', [CommentController::class, 'store'])->name('news.comment');
 Route::get('news/{uuid}', [BlogController::class, 'show'])->name('newssingle');
 
-Route::get('/questionnaire', [QuestionnaireController::class, 'index'])->name('questionnaires-book-consultations');
-Route::post('/submit-questionnaire', [QuestionnaireController::class, 'submitQuestionnaire'])->name('submit-questionnaire');
 Route::get('/trg-africa-brainstorm', [PostController::class, 'index'])->name('posts.index');
 Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
 Route::post('/posts/{post}/replies', [ReplyController::class, 'store'])->name('replies.store');

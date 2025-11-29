@@ -25,11 +25,6 @@ class Consultation extends Model implements Auditable
     public const HOURLY_RATE = 50;
 
     /**
-     * Maximum assessment score
-     */
-    public const MAX_ASSESSMENT_SCORE = 340; // 34 questions × 10
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -42,7 +37,7 @@ class Consultation extends Model implements Auditable
         'phone',
         'nationality',
         'country_of_residence',
-        'questionnaire',
+        'consultation_interest',
         'consultation_hours',
         'scheduled_for',
         'quoted_amount',
@@ -62,33 +57,12 @@ class Consultation extends Model implements Auditable
      * @var array<string, string>
      */
     protected $casts = [
-        'questionnaire' => 'array',
         'scheduled_for' => 'date',
         'quoted_amount' => 'integer',
         'consultation_hours' => 'integer',
         'rebook_count' => 'integer',
         'meta' => 'array',
     ];
-
-    /**
-     * Get the assessment score total
-     */
-    public function getAssessmentScoreAttribute(): int
-    {
-        if (! is_array($this->questionnaire)) {
-            return 0;
-        }
-
-        return array_sum(array_map(fn ($value) => (int) $value, $this->questionnaire));
-    }
-
-    /**
-     * Get the assessment percentage
-     */
-    public function getAssessmentPercentageAttribute(): float
-    {
-        return round(($this->assessment_score / self::MAX_ASSESSMENT_SCORE) * 100, 2);
-    }
 
     /**
      * Get all payments for this consultation
