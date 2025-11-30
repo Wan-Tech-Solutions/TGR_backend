@@ -23,6 +23,12 @@ class Kernel extends ConsoleKernel
                  ->hourly()
                  ->withoutOverlapping()
                  ->appendOutputTo(storage_path('logs/email-sync.log'));
+
+        // Fetch incoming emails via IMAP every minute
+        $schedule->command('email:fetch-incoming --limit=100')
+                 ->everyMinute()
+                 ->withoutOverlapping()
+                 ->appendOutputTo(storage_path('logs/email-fetch.log'));
     }
 
     /**

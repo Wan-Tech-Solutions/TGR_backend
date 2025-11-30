@@ -35,7 +35,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-primary bg-opacity-10 text-white rounded-2 p-3 me-3">
                                 <i class="fas fa-envelope fa-lg"></i>
                             </div>
                             <div>
@@ -50,12 +50,12 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-success bg-opacity-10 text-success rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-success bg-opacity-10 text-white rounded-2 p-3 me-3">
                                 <i class="fas fa-check-circle fa-lg"></i>
                             </div>
                             <div>
                                 <p class="text-muted text-uppercase small fw-semibold mb-1">Responded</p>
-                                <h3 class="fw-bold text-success mb-0">0</h3>
+                                <h3 class="fw-bold text-success mb-0">{{ $contact->where('responded', true)->count() }}</h3>
                             </div>
                         </div>
                     </div>
@@ -65,12 +65,12 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-warning bg-opacity-10 text-warning rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-warning bg-opacity-10 text-white rounded-2 p-3 me-3">
                                 <i class="fas fa-clock fa-lg"></i>
                             </div>
                             <div>
                                 <p class="text-muted text-uppercase small fw-semibold mb-1">Pending</p>
-                                <h3 class="fw-bold text-warning mb-0">{{ $contact->count() }}</h3>
+                                <h3 class="fw-bold text-warning mb-0">{{ $contact->where('responded', false)->count() }}</h3>
                             </div>
                         </div>
                     </div>
@@ -80,7 +80,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-info bg-opacity-10 text-info rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-info bg-opacity-10 text-white rounded-2 p-3 me-3">
                                 <i class="fas fa-calendar-alt fa-lg"></i>
                             </div>
                             <div>
@@ -132,7 +132,7 @@
                             <tr>
                                 <td class="ps-4">
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        <div class="avatar bg-primary bg-opacity-10 text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
                                             {{ substr($response->full_name, 0, 1) }}
                                         </div>
                                         <div>
@@ -168,9 +168,15 @@
                                     </div>
                                 </td>
                                 <td class="pe-4">
-                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1">
-                                        Pending
-                                    </span>
+                                    @if($response->responded)
+                                        <span class="badge bg-success bg-opacity-10 text-white border border-success border-opacity-25 px-2 py-1">
+                                            Responded
+                                        </span>
+                                    @else
+                                        <span class="badge bg-warning bg-opacity-10 text-white border border-warning border-opacity-25 px-2 py-1">
+                                            Pending
+                                        </span>
+                                    @endif
                                 </td>
                                 <td class="pe-4">
                                     <div class="d-flex gap-1">
@@ -182,13 +188,16 @@
                                                 onclick="viewResponse({{ $response->id }}, '{{ addslashes($response->full_name) }}', '{{ $response->email }}', '{{ addslashes($response->subject) }}', '{{ addslashes($response->message) }}', '{{ $response->country_of_residence }}', '{{ $response->nationality }}', '{{ $response->created_at->format('M d, Y h:i A') }}')">
                                             <i class="fas fa-eye"></i>
                                         </button>
+                                        @if(!$response->responded)
                                         <button type="button" 
-                                                class="btn btn-sm btn-outline-success d-flex align-items-center"
+                                                class="btn btn-sm btn-outline-success d-flex align-items-center mark-responded-btn"
+                                                data-id="{{ $response->id }}"
                                                 data-bs-toggle="tooltip" 
                                                 title="Mark as Responded">
                                             <i class="fas fa-check"></i>
                                         </button>
-                                        <form action="#" method="POST" class="d-inline">
+                                        @endif
+                                        <form action="{{ route('admin.contact.delete', $response->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" 
@@ -512,6 +521,52 @@ function sendResponse() {
     
     window.location.href = composeUrl;
 }
+
+// Handle Mark as Responded button click
+document.addEventListener('DOMContentLoaded', function() {
+    const markRespondedButtons = document.querySelectorAll('.mark-responded-btn');
+    
+    markRespondedButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const contactId = this.getAttribute('data-id');
+            const btn = this;
+            
+            if (confirm('Mark this contact as responded?')) {
+                // Disable button
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                
+                // Send AJAX request
+                fetch(`{{ url('admin-contact') }}/${contactId}/respond`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show success message
+                        alert(data.message);
+                        // Reload page to update the UI
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-check"></i>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while marking as responded.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-check"></i>';
+                });
+            }
+        });
+    });
+});
 </script>
 
 @include('adminPortal.layout.footer')

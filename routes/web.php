@@ -55,6 +55,7 @@ use App\Http\Controllers\Admin\AdminIncomingEmailController;
 use App\Http\Controllers\Admin\AdminEmailAddressController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\NewsletterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,6 +80,8 @@ Route::get('layout', [AdminHomeController::class, 'layout']);
 
 //Contact Here
 Route::get('admin-contact', [AdminContactController::class, 'contact'])->name('administration.contact.response');
+Route::post('admin-contact/{id}/respond', [AdminContactController::class, 'markAsResponded'])->name('admin.contact.mark-responded');
+Route::delete('admin-contact/{id}', [AdminContactController::class, 'delete'])->name('admin.contact.delete');
 
 //FOunders Here
 Route::get('admin-founders', [AdminFoundersController::class, 'founders'])->name('admin.founders');
@@ -86,6 +89,13 @@ Route::get('admin-founders', [AdminFoundersController::class, 'founders'])->name
 
 //Subscribers Here 
 Route::get('admin-subscribers', [AdminSubscribersController::class, 'subscribers'])->name('admin.subscribers');
+//Newsletter subscribers (admin view)
+Route::get('admin-newsletter', [NewsletterController::class, 'index'])->name('admin.newsletter');
+Route::post('admin-newsletter/send', [NewsletterController::class, 'send'])->name('admin.newsletter.send');
+Route::post('admin-newsletter/{id}/unsubscribe', [NewsletterController::class, 'adminUnsubscribe'])->name('admin.newsletter.unsubscribe');
+Route::delete('admin-newsletter/{id}', [NewsletterController::class, 'adminDelete'])->name('admin.newsletter.delete');
+Route::post('admin-newsletter/{id}/reactivate', [NewsletterController::class, 'adminReactivate'])->name('admin.newsletter.reactivate');
+Route::get('admin-newsletter/export', [NewsletterController::class, 'exportCsv'])->name('admin.newsletter.export');
 
 //Consultations Here
 Route::get('admin-consultations', [AdminConsultationsController::class, 'consultations'])->name('admin.consultations');
@@ -110,13 +120,23 @@ Route::get('admin-feedbacks', [AdminFeedBackController::class, 'feedbacks'])->na
 //Prospectus Here
 Route::get('admin-prospectus', [AdminProspectusController::class, 'prospectus'])->name('admin.prospectus');
 Route::post('admin-prospectus', [AdminProspectusController::class, 'store'])->name('admin.prospectus.store');
+Route::get('admin-prospectus/{id}/edit', [AdminProspectusController::class, 'edit'])->name('admin.prospectus.edit');
+Route::post('admin-prospectus/{id}', [AdminProspectusController::class, 'update'])->name('admin.prospectus.update');
+Route::get('admin-prospectus/{id}/download', [AdminProspectusController::class, 'download'])->name('admin.prospectus.download');
 Route::delete('admin-prospectus/{id}', [AdminProspectusController::class, 'destroy'])->name('admin.prospectus.destroy');
 
 //Roles Here
 Route::get('admin-roles', [AdminRolesController::class, 'roles'])->name('admin.roles');
+Route::get('admin-roles/{id}/edit', [AdminRolesController::class, 'edit'])->name('admin.roles.edit');
+Route::post('admin-roles/{id}', [AdminRolesController::class, 'update'])->name('admin.roles.update');
+Route::get('admin-roles/{id}/permissions', [AdminRolesController::class, 'getPermissions'])->name('admin.roles.permissions');
 
 //Profiles Here
 Route::get('admin-profiles', [AdminProfilesController::class, 'profiles'])->name('admin.profiles');
+Route::get('admin-profiles/{id}/view', [AdminProfilesController::class, 'view'])->name('admin.profiles.view');
+Route::get('admin-profiles/{id}/edit', [AdminProfilesController::class, 'edit'])->name('admin.profiles.edit');
+Route::post('admin-profiles/{id}', [AdminProfilesController::class, 'update'])->name('admin.profiles.update');
+Route::delete('admin-profiles/{id}', [AdminProfilesController::class, 'destroy'])->name('admin.profiles.destroy');
 Route::get('my-profile', [AdminProfilesController::class, 'myProfile'])->name('admin.my.profile');
 
 //Password Resets
@@ -170,6 +190,7 @@ Route::delete('admin-email-tracking/{uuid}', [App\Http\Controllers\Admin\AdminEm
 
 //Inbox (Incoming Emails)
 Route::get('admin-email-inbox', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'index'])->name('admin.email.inbox');
+Route::post('admin-email-inbox/fetch', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'fetchNewEmails'])->name('admin.email.fetch');
 Route::get('admin-email-inbox/{uuid}', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'show'])->name('admin.email.inbox.show');
 Route::post('admin-email-inbox/{uuid}/mark-read', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'markAsRead'])->name('admin.email.inbox.mark-read');
 Route::post('admin-email-inbox/{uuid}/mark-unread', [App\Http\Controllers\Admin\AdminIncomingEmailController::class, 'markAsUnread'])->name('admin.email.inbox.mark-unread');
@@ -195,8 +216,8 @@ Route::delete('admin-email-addresses/{emailAddress}', [AdminEmailAddressControll
 });
 //Michael Updates End Here
 
-
-
+// Public prospectus download route (with tracking) - Must be outside auth middleware
+Route::get('prospectus/download/{id}', [AdminProspectusController::class, 'download'])->name('prospectus.download');
 
 
 
@@ -204,6 +225,12 @@ Route::delete('admin-email-addresses/{emailAddress}', [AdminEmailAddressControll
 //Sending Emails through contact page
 
 Route::post('/contact-submit', [ContactController::class, 'submit'])->name('contact.submit');
+
+// Public newsletter subscription endpoint
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'store'])->name('newsletter.subscribe');
+Route::get('/newsletter/unsubscribe/{token}', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
+Route::get('/newsletter/unsubscribe-request', [NewsletterController::class, 'showUnsubscribeRequestForm'])->name('newsletter.unsubscribe.request.form');
+Route::post('/newsletter/unsubscribe-request', [NewsletterController::class, 'sendUnsubscribeConfirmation'])->name('newsletter.unsubscribe.request');
 
 Route::get('/', function () {
     return view('website.index');
@@ -320,8 +347,10 @@ Route::get('news', function () {
     return view('website.news', compact('latest_blogs'));
 })->name('news');
 
-// Route::post('/prospectus', [ProspectusRequestController::class, 'store'])->name('prospectus.store');
-Route::post('/prospectus', [ProspectusRequestController::class, 'store'])->name('prospectus.store');
+// Use a distinct POST path so it doesn't conflict with the `public/prospectus` directory
+// (requests to an existing public directory can be handled by the webserver and bypass
+// Laravel's front controller; using a different path avoids that.)
+Route::post('/prospectus-request', [ProspectusRequestController::class, 'store'])->name('prospectus.store');
 Route::resource('seminars', SubscribeSeminarsController::class);
 Route::get('/subscribe-serminars', [SubscribeSeminarsController::class, 'index'])->name('seminarsindex');
 Route::post('/subscribed-users', [SubscribeSeminarsController::class, 'users_subscribed_semiars'])->name('subscribed-users');

@@ -14,13 +14,16 @@
 
 				<h5 class="text-4 font-weight-bold mb-3 mt-4">Newsletter</h5>
 				<p class="text-3-5">Stay informed with our latest news and updates.</p>
-				<div class="alert alert-success d-none" id="newsletterSuccess">
-					<strong>Success!</strong> You've been added to our mailing list.
-				</div>
-				<div class="alert alert-danger d-none" id="newsletterError"></div>
-				<form id="newsletterForm" action="#" method="POST" class="me-4 mb-3 mb-md-0">
+				@if(session('newsletter_success'))
+					<div class="alert alert-success">{{ session('newsletter_success') }}</div>
+				@endif
+				@if($errors->has('email'))
+					<div class="alert alert-danger">{{ $errors->first('email') }}</div>
+				@endif
+				<form id="newsletterForm" action="{{ route('newsletter.subscribe') }}" method="POST" class="me-4 mb-3 mb-md-0">
+					@csrf
 					<div class="input-group">
-						<input class="form-control form-control-sm bg-color-dark-scale-2 border-0 rounded-0" placeholder="Email Address" name="newsletterEmail" id="newsletterEmail" type="email" />
+						<input class="form-control form-control-sm bg-color-dark-scale-2 border-0 rounded-0" placeholder="Email Address" name="email" id="newsletterEmail" type="email" required />
 						<button class="btn btn-primary text-color-light px-3 rounded-0" type="submit">
 							<i class="fas fa-paper-plane"></i>
 						</button>
@@ -165,3 +168,72 @@
 		color: #FFF !important;
 	}
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+	const form = document.getElementById('newsletterForm');
+	if (!form) return;
+
+	form.addEventListener('submit', function(e){
+		e.preventDefault();
+		const submitBtn = form.querySelector('button[type="submit"]');
+		if (submitBtn) submitBtn.disabled = true;
+
+		const formData = new FormData(form);
+		const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+		const csrfToken = tokenMeta ? tokenMeta.getAttribute('content') : formData.get('_token');
+
+		fetch(form.action, {
+			method: 'POST',
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest',
+				'X-CSRF-TOKEN': csrfToken
+			},
+			body: formData,
+			credentials: 'same-origin'
+		}).then(async (res) => {
+			if (submitBtn) submitBtn.disabled = false;
+
+			if (res.status === 201 || res.ok) {
+				let data = {};
+				try { data = await res.json(); } catch(_) {}
+				showNewsletterMessage(data.message || 'Thank you — you have been subscribed to our newsletter.', 'success');
+				form.reset();
+				return;
+			}
+
+			if (res.status === 422) {
+				let data = {};
+				try { data = await res.json(); } catch(_) {}
+				const err = data.errors?.email?.[0] || 'Validation error';
+				showNewsletterMessage(err, 'danger');
+				return;
+			}
+
+			if (res.status === 419) {
+				showNewsletterMessage('Session expired — please reload the page and try again.', 'danger');
+				return;
+			}
+
+			const text = await res.text();
+			showNewsletterMessage('Error: ' + (text || res.statusText || res.status), 'danger');
+		}).catch((err) => {
+			if (submitBtn) submitBtn.disabled = false;
+			console.error('Newsletter submit error', err);
+			showNewsletterMessage('Network error — please try again.', 'danger');
+		});
+	});
+
+	function showNewsletterMessage(message, type) {
+		const existing = document.getElementById('newsletterMessage');
+		if (existing) existing.remove();
+		const div = document.createElement('div');
+		div.id = 'newsletterMessage';
+		div.className = 'alert ' + (type === 'success' ? 'alert-success' : 'alert-danger');
+		div.textContent = message;
+		const formContainer = form.parentNode;
+		formContainer.insertBefore(div, form);
+		setTimeout(() => { const el = document.getElementById('newsletterMessage'); if (el) el.remove(); }, 8000);
+	}
+});
+</script>

@@ -85,6 +85,99 @@ class AdminProspectusController extends Controller
         }
     }
 
+    public function edit($id){
+        try {
+            $prospectus = Prospectus::findOrFail($id);
+            return response()->json([
+                'success' => true,
+                'data' => $prospectus
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Prospectus not found'
+            ], 404);
+        }
+    }
+
+    public function update(Request $request, $id){
+        try {
+            $prospectus = Prospectus::findOrFail($id);
+            
+            $validated = $request->validate([
+                'prospectus_title' => 'required|string|max:255',
+                'prospectus_file' => 'nullable|file|mimes:pdf|max:10240',
+                'prospectus_description' => 'required|string|max:1000',
+            ]);
+
+            // Update prospectus details
+            $prospectus->prospectus_title = $validated['prospectus_title'];
+            $prospectus->prospectus_description = $validated['prospectus_description'];
+            $prospectus->is_published = $request->has('publish_immediately') ? 1 : 0;
+
+            // Handle file upload if new file provided
+            if ($request->hasFile('prospectus_file')) {
+                // Delete old file
+                if ($prospectus->prospectus_file) {
+                    $oldFilePath = public_path('prospectus/' . $prospectus->prospectus_file);
+                    if (file_exists($oldFilePath)) {
+                        unlink($oldFilePath);
+                    }
+                }
+
+                // Store new file
+                $file = $request->file('prospectus_file');
+                $filename = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+                
+                $publicPath = base_path('public/prospectus');
+                if (!is_dir($publicPath)) {
+                    mkdir($publicPath, 0755, true);
+                }
+                $file->move($publicPath, $filename);
+                
+                $prospectus->prospectus_file = $filename;
+            }
+
+            $prospectus->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Prospectus updated successfully',
+                'data' => $prospectus
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating prospectus: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function download($id){
+        try {
+            $prospectus = Prospectus::findOrFail($id);
+            
+            // Increment download count
+            $prospectus->increment('download_count');
+            
+            $filePath = public_path('prospectus/' . $prospectus->prospectus_file);
+            
+            if (file_exists($filePath)) {
+                return response()->download($filePath, $prospectus->prospectus_file);
+            }
+            
+            return redirect()->back()->with('error', 'File not found');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error downloading prospectus: ' . $e->getMessage());
+        }
+    }
+
     public function destroy($id){
         try {
             $prospectus = Prospectus::findOrFail($id);

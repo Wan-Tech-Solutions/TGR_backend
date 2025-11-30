@@ -24,6 +24,8 @@ class ContactUs extends Model implements Auditable
         'nationality',
         'subject',
         'message',
+        'responded',
+        'responded_at',
     ];
 
     /**
@@ -32,6 +34,7 @@ class ContactUs extends Model implements Auditable
      * @var array<string, string>
      */
     protected $casts = [
-
+        'responded' => 'boolean',
+        'responded_at' => 'datetime',
     ];
 }

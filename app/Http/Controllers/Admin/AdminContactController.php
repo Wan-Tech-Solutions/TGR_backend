@@ -23,4 +23,36 @@ class AdminContactController extends Controller
         return view('adminPortal.contact.contact',compact('count_blogs','contact','contact_count','founder_count','prospectus_count'));
     }
     
+    public function markAsResponded($id)
+    {
+        try {
+            $contact = ContactUs::findOrFail($id);
+            $contact->responded = true;
+            $contact->responded_at = now();
+            $contact->save();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Contact marked as responded successfully!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error marking contact as responded: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    public function delete($id)
+    {
+        try {
+            $contact = ContactUs::findOrFail($id);
+            $contact->delete();
+            
+            return redirect()->back()->with('success', 'Contact response deleted successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error deleting contact: ' . $e->getMessage());
+        }
+    }
+    
 }

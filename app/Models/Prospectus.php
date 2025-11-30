@@ -33,6 +33,7 @@ class Prospectus extends Model implements Auditable
         'prospectus_file',
         'prospectus_description',
         'is_published',
+        'download_count',
     ];
 
     /**

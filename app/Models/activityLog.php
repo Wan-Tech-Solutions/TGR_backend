@@ -27,6 +27,6 @@ class activityLog extends Model implements Auditable
         * @var array<string, string>
         */
         protected $casts = [
-
+            'date_time' => 'datetime',
         ];
 }

@@ -192,4 +192,31 @@ class AdminIncomingEmailController extends Controller
 
         return redirect()->back()->with('success', 'Trash emptied');
     }
+
+    /**
+     * Fetch new emails from IMAP server
+     */
+    public function fetchNewEmails()
+    {
+        try {
+            \Artisan::call('email:fetch-incoming', ['--limit' => 50]);
+            $output = \Artisan::output();
+            
+            // Extract new count from output
+            preg_match('/New emails: (\d+)/', $output, $matches);
+            $newCount = $matches[1] ?? 0;
+            
+            return response()->json([
+                'success' => true,
+                'new_count' => (int)$newCount,
+                'message' => "Fetched {$newCount} new emails"
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("Email fetch error: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch emails: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

@@ -25,6 +25,14 @@ class Role extends Model implements Auditable
     ];
 
     /**
+     * Get the permissions for the role.
+     */
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'role_has_permissions');
+    }
+
+    /**
      * The attributes that should be cast.
      *
      * @var array<string, string>

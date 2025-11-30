@@ -42,7 +42,7 @@
                             <h5 class="card-title fw-bold text-dark mb-0">
                                 <i class="fas fa-envelope me-2 text-primary"></i>Email Information
                             </h5>
-                            <span class="badge bg-{{ $email->status_color }} bg-opacity-10 text-{{ $email->status_color }} border border-{{ $email->status_color }} border-opacity-25 px-3 py-2">
+                            <span class="badge bg-{{ $email->status_color }} bg-opacity-10 text-{{ $email->white }} border border-{{ $email->status_color }} border-opacity-25 px-3 py-2">
                                 <i class="{{ $email->status_icon }} me-1"></i>{{ ucfirst($email->status) }}
                             </span>
                         </div>
@@ -122,7 +122,7 @@
                             <!-- Created -->
                             <div class="timeline-item mb-4">
                                 <div class="d-flex">
-                                    <div class="timeline-marker bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
+                                    <div class="timeline-marker bg-primary bg-opacity-10 text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
                                         <i class="fas fa-plus-circle"></i>
                                     </div>
                                     <div class="ms-3">
@@ -136,7 +136,7 @@
                             @if($email->sent_at)
                             <div class="timeline-item">
                                 <div class="d-flex">
-                                    <div class="timeline-marker bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
+                                    <div class="timeline-marker bg-success bg-opacity-10 text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
                                         <i class="fas fa-check-circle"></i>
                                     </div>
                                     <div class="ms-3">
@@ -149,7 +149,7 @@
                             @elseif($email->status === 'failed')
                             <div class="timeline-item">
                                 <div class="d-flex">
-                                    <div class="timeline-marker bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
+                                    <div class="timeline-marker bg-danger bg-opacity-10 text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
                                         <i class="fas fa-times-circle"></i>
                                     </div>
                                     <div class="ms-3">
@@ -161,7 +161,7 @@
                             @else
                             <div class="timeline-item">
                                 <div class="d-flex">
-                                    <div class="timeline-marker bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
+                                    <div class="timeline-marker bg-warning bg-opacity-10 text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
                                         <i class="fas fa-hourglass-half"></i>
                                     </div>
                                     <div class="ms-3">

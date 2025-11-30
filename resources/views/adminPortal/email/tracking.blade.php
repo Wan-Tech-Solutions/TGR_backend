@@ -178,7 +178,7 @@
                                     </small>
                                 </td>
                                 <td>
-                                    <span class="badge bg-{{ $email->status_color }} bg-opacity-10 text-{{ $email->status_color }} border border-{{ $email->status_color }} border-opacity-25 px-2 py-1">
+                                    <span class="badge bg-{{ $email->status_color }} bg-opacity-10 text-{{ $email->white }} border border-{{ $email->status_color }} border-opacity-25 px-2 py-1">
                                         <i class="{{ $email->status_icon }} me-1"></i>{{ ucfirst($email->status) }}
                                     </span>
                                 </td>

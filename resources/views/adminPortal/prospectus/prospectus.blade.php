@@ -35,7 +35,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-primary bg-opacity-10 text-white rounded-2 p-3 me-3">
                                 <i class="fas fa-file-pdf fa-lg"></i>
                             </div>
                             <div>
@@ -50,7 +50,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-success bg-opacity-10 text-success rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-success bg-opacity-10 text-white rounded-2 p-3 me-3">
                                 <i class="fas fa-eye fa-lg"></i>
                             </div>
                             <div>
@@ -65,7 +65,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-warning bg-opacity-10 text-warning rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-warning bg-opacity-10 text-white rounded-2 p-3 me-3">
                                 <i class="fas fa-clock fa-lg"></i>
                             </div>
                             <div>
@@ -80,12 +80,12 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-info bg-opacity-10 text-info rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-info bg-opacity-10 text-white rounded-2 p-3 me-3">
                                 <i class="fas fa-download fa-lg"></i>
                             </div>
                             <div>
                                 <p class="text-muted text-uppercase small fw-semibold mb-1">Total Downloads</p>
-                                <h3 class="fw-bold text-info mb-0">0</h3>
+                                <h3 class="fw-bold text-info mb-0">{{ $prospectus->sum('download_count') }}</h3>
                             </div>
                         </div>
                     </div>
@@ -128,7 +128,7 @@
                             <tr>
                                 <td class="ps-4">
                                     <div class="d-flex align-items-center">
-                                        <div class="file-icon bg-danger bg-opacity-10 text-danger rounded-2 p-3 me-3">
+                                        <div class="file-icon bg-danger bg-opacity-10 text-white rounded-2 p-3 me-3">
                                             <i class="fas fa-file-pdf fa-lg"></i>
                                         </div>
                                         <div>
@@ -162,12 +162,14 @@
                                 <td class="pe-4">
                                     <div class="d-flex gap-2">
                                         @if($item->prospectus_file)
-                                        <a href="{{ asset('prospectus/' . $item->prospectus_file) }}" 
-                                           target="_blank"
+                                        <a href="{{ route('admin.prospectus.download', $item->id) }}" 
                                            class="btn btn-sm btn-outline-primary d-flex align-items-center"
                                            data-bs-toggle="tooltip" 
-                                           title="Download Prospectus">
+                                           title="Download Prospectus ({{ $item->download_count }} downloads)">
                                             <i class="fas fa-download me-1"></i> Download
+                                            @if($item->download_count > 0)
+                                                <span class="badge bg-primary ms-1">{{ $item->download_count }}</span>
+                                            @endif
                                         </a>
                                         @else
                                         <button type="button" 
@@ -176,7 +178,8 @@
                                         </button>
                                         @endif
                                         <button type="button" 
-                                                class="btn btn-sm btn-outline-warning d-flex align-items-center"
+                                                class="btn btn-sm btn-outline-warning d-flex align-items-center edit-prospectus-btn"
+                                                data-id="{{ $item->id }}"
                                                 data-bs-toggle="tooltip" 
                                                 title="Edit Prospectus">
                                             <i class="fas fa-edit me-1"></i> Edit
@@ -223,6 +226,90 @@
                 </div>
             </div>
             @endif
+        </div>
+    </div>
+</div>
+
+<!-- Edit Prospectus Modal -->
+<div class="modal fade" id="editProspectusModal" tabindex="-1" aria-labelledby="editProspectusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light border-0 py-4">
+                <div>
+                    <h5 class="modal-title fw-bold text-dark mb-1" id="editProspectusModalLabel">
+                        <i class="fas fa-edit me-2 text-warning"></i>Edit Prospectus
+                    </h5>
+                    <p class="text-muted small mb-0">Update prospectus information</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editProspectusForm" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" id="editProspectusId" name="prospectus_id">
+                <div class="modal-body py-4">
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="editProspectusTitle" class="form-label small fw-semibold text-muted text-uppercase">Prospectus Title</label>
+                                <input type="text" 
+                                       name="prospectus_title"
+                                       class="form-control form-control-lg" 
+                                       id="editProspectusTitle" 
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="editProspectusFile" class="form-label small fw-semibold text-muted text-uppercase">PDF File (Optional)</label>
+                                <div class="file-upload-area border rounded-2 p-4 text-center">
+                                    <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-3"></i>
+                                    <h6 class="text-dark mb-2">Upload new PDF file (leave empty to keep current file)</h6>
+                                    <p class="text-muted small mb-3">Maximum file size: 10MB</p>
+                                    <input type="file" 
+                                           name="prospectus_file"
+                                           class="form-control d-none" 
+                                           id="editProspectusFile" 
+                                           accept=".pdf">
+                                    <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('editProspectusFile').click()">
+                                        <i class="fas fa-folder-open me-2"></i>Choose File
+                                    </button>
+                                    <div id="editFileName" class="mt-2 small text-muted"></div>
+                                    <div id="currentFileName" class="mt-2 small text-info"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="editProspectusDescription" class="form-label small fw-semibold text-muted text-uppercase">Description</label>
+                                <textarea class="form-control" 
+                                          name="prospectus_description"
+                                          id="editProspectusDescription" 
+                                          rows="4" 
+                                          required></textarea>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="publish_immediately" id="editPublishImmediately">
+                                <label class="form-check-label small fw-medium" for="editPublishImmediately">
+                                    Published
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12" id="editUploadMessage" style="display: none;">
+                            <div class="alert" id="editUploadAlert" role="alert"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-light py-3">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-warning" id="editSubmitBtn">
+                        <i class="fas fa-save me-2"></i>Update Prospectus
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -542,6 +629,106 @@ document.addEventListener('DOMContentLoaded', function() {
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
+        }
+    });
+
+    // Edit prospectus functionality
+    const editButtons = document.querySelectorAll('.edit-prospectus-btn');
+    const editModal = new bootstrap.Modal(document.getElementById('editProspectusModal'));
+    const editProspectusForm = document.getElementById('editProspectusForm');
+    const editFileInput = document.getElementById('editProspectusFile');
+    const editFileName = document.getElementById('editFileName');
+    const currentFileName = document.getElementById('currentFileName');
+    const editSubmitBtn = document.getElementById('editSubmitBtn');
+    const editUploadMessage = document.getElementById('editUploadMessage');
+    const editUploadAlert = document.getElementById('editUploadAlert');
+
+    editButtons.forEach(button => {
+        button.addEventListener('click', async function() {
+            const prospectusId = this.dataset.id;
+            
+            try {
+                const response = await fetch(`/admin-prospectus/${prospectusId}/edit`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const prospectus = data.data;
+                    document.getElementById('editProspectusId').value = prospectus.id;
+                    document.getElementById('editProspectusTitle').value = prospectus.prospectus_title;
+                    document.getElementById('editProspectusDescription').value = prospectus.prospectus_description;
+                    document.getElementById('editPublishImmediately').checked = prospectus.is_published == 1;
+                    currentFileName.textContent = `Current file: ${prospectus.prospectus_file}`;
+                    editFileName.textContent = '';
+                    editProspectusForm.action = `/admin-prospectus/${prospectus.id}`;
+                    
+                    editModal.show();
+                } else {
+                    alert('Error loading prospectus data');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+    });
+
+    // Handle file change in edit modal
+    editFileInput.addEventListener('change', function(e) {
+        if (this.files.length > 0) {
+            editFileName.textContent = `New file: ${this.files[0].name}`;
+            editFileName.className = 'mt-2 small text-success fw-medium';
+        }
+    });
+
+    // Edit form submission
+    editProspectusForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        editSubmitBtn.disabled = true;
+        const originalText = editSubmitBtn.innerHTML;
+        editSubmitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+        
+        try {
+            const formData = new FormData(editProspectusForm);
+            const response = await fetch(editProspectusForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                editUploadMessage.style.display = 'block';
+                editUploadAlert.className = 'alert alert-success alert-dismissible fade show';
+                editUploadAlert.innerHTML = `
+                    <i class="fas fa-check-circle me-2"></i>${data.message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                editUploadMessage.style.display = 'block';
+                editUploadAlert.className = 'alert alert-danger alert-dismissible fade show';
+                const errorMsg = data.errors ? Object.values(data.errors).flat().join('<br>') : data.message;
+                editUploadAlert.innerHTML = `
+                    <i class="fas fa-exclamation-circle me-2"></i>${errorMsg}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+            }
+        } catch (error) {
+            editUploadMessage.style.display = 'block';
+            editUploadAlert.className = 'alert alert-danger alert-dismissible fade show';
+            editUploadAlert.innerHTML = `
+                <i class="fas fa-exclamation-circle me-2"></i>Error: ${error.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+        } finally {
+            editSubmitBtn.disabled = false;
+            editSubmitBtn.innerHTML = originalText;
         }
     });
 });

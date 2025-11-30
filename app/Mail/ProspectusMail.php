@@ -21,7 +21,7 @@ class ProspectusMail extends Mailable
     public function build()
     {
         return $this
-            ->from('investorscommunity@tgrafrica.com', 'TGR Africa')
+            ->from(config('mail.from.address'), config('mail.from.name'))
             ->to($this->email)
             ->subject('TGR Prospectus Request')
             ->view('emails.prospectus')

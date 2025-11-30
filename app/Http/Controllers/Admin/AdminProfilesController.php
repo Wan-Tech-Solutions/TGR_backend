@@ -17,12 +17,87 @@ class AdminProfilesController extends Controller
 {
     public function profiles(){
         $count_blogs = Blog::count('id');
-        $users = User::orderby('id','desc')->get();
+        $users = User::orderby('id','desc')->paginate(50);
         $contact_count = ContactUs::count('id');
         $founder_count = Founder::count('id');
         $prospectus_count = Prospectus::count('id');
 
         return view('adminPortal.profiles.profiles',compact('count_blogs','users','contact_count','founder_count','prospectus_count'));
+    }
+
+    public function view($id){
+        try {
+            $user = User::findOrFail($id);
+            return response()->json([
+                'success' => true,
+                'data' => $user
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+    }
+
+    public function edit($id){
+        try {
+            $user = User::findOrFail($id);
+            return response()->json([
+                'success' => true,
+                'data' => $user
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+    }
+
+    public function update(Request $request, $id){
+        try {
+            $user = User::findOrFail($id);
+            
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,' . $id,
+                'gender' => 'nullable|string',
+                'country_of_residence' => 'nullable|string',
+                'nationality' => 'nullable|string',
+                'status' => 'required|in:0,1',
+            ]);
+
+            $user->update($validated);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User updated successfully',
+                'data' => $user
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating user: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function destroy($id){
+        try {
+            $user = User::findOrFail($id);
+            $user->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting user: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

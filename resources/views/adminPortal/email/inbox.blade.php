@@ -101,17 +101,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Storage Info -->
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body text-center">
-                        <h6 class="card-title mb-3">Storage</h6>
-                        <div class="progress mb-2">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: 35%"></div>
-                        </div>
-                        <small class="text-muted">3.5 GB of 15 GB used</small>
-                    </div>
-                </div>
             </div>
 
             <!-- Main Content -->
@@ -131,11 +120,11 @@
                             </div>
                             <div class="col-md-6 text-end">
                                 <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" title="Refresh">
-                                        <i class="fas fa-sync"></i>
+                                    <button type="button" class="btn btn-sm btn-primary" onclick="fetchNewEmails()" title="Fetch New Emails">
+                                        <i class="fas fa-download me-1"></i>Fetch New
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" title="Settings">
-                                        <i class="fas fa-cog"></i>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.location.reload()" title="Refresh">
+                                        <i class="fas fa-sync"></i>
                                     </button>
                                 </div>
                             </div>
@@ -165,7 +154,7 @@
                     <div class="card-body p-0">
                         <div class="email-list">
                             @forelse($emails as $email)
-                            <div class="email-item p-3 border-bottom {{ !$email->is_read ? 'email-unread' : '' }}" style="background-color: {{ !$email->is_read ? '#f0f7ff' : 'white' }}">
+                            <div class="email-item p-3 border-bottom {{ !$email->is_read ? 'email-unread' : 'email-read' }}" style="background-color: {{ !$email->is_read ? '#f0f7ff' : '#f9f9f9' }}">
                                 <div class="row align-items-center">
                                     <div class="col-auto">
                                         <div class="form-check">
@@ -178,8 +167,8 @@
                                             <i class="fas fa-star"></i>
                                         </button>
                                     </div>
-                                    <div class="col">
-                                        <a href="{{ route('admin.email.inbox.show', $email->uuid) }}" class="text-decoration-none">
+                                    <div class="col email-row" data-href="{{ route('admin.email.inbox.show', $email->uuid) }}">
+                                        <div class="text-decoration-none">
                                             <div class="d-flex justify-content-between">
                                                 <div>
                                                     <h6 class="mb-1 {{ $email->is_read ? 'fw-normal text-muted' : 'fw-bold text-dark' }}">
@@ -197,7 +186,7 @@
                                                     @endif
                                                 </div>
                                             </div>
-                                        </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -233,11 +222,15 @@
 }
 
 .email-item:hover {
-    background-color: #f5f5f5 !important;
+    background-color: #e8f4ff !important;
 }
 
 .email-unread {
-    font-weight: 500;
+    font-weight: 600;
+}
+
+.email-read {
+    opacity: 0.85;
 }
 
 .list-group-item.active {
@@ -266,9 +259,11 @@
 </style>
 
 <script>
+// Star toggle functionality
 document.querySelectorAll('.toggle-starred').forEach(button => {
     button.addEventListener('click', function(e) {
         e.preventDefault();
+        e.stopPropagation();
         const uuid = this.dataset.uuid;
         fetch(`/admin-email-inbox/${uuid}/toggle-starred`, {
             method: 'POST',
@@ -283,6 +278,53 @@ document.querySelectorAll('.toggle-starred').forEach(button => {
         });
     });
 });
+
+// Click email row to open
+document.querySelectorAll('.email-row').forEach(row => {
+    row.addEventListener('click', function(e) {
+        if (!e.target.closest('.toggle-starred') && !e.target.closest('.form-check-input')) {
+            window.location.href = this.dataset.href;
+        }
+    });
+    row.style.cursor = 'pointer';
+});
+
+function fetchNewEmails() {
+    const btn = event.target.closest('button');
+    const originalHTML = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Fetching...';
+    
+    fetch('{{ route("admin.email.fetch") }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+        
+        if (data.success) {
+            if (data.new_count > 0) {
+                alert(`✓ Fetched ${data.new_count} new email${data.new_count > 1 ? 's' : ''}`);
+                window.location.reload();
+            } else {
+                alert('ℹ No new emails at this time');
+            }
+        } else {
+            alert('Error: ' + (data.message || 'Failed to fetch emails'));
+        }
+    })
+    .catch(error => {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+        alert('Error fetching emails. Check console for details.');
+        console.error(error);
+    });
+}
 </script>
 
 @include('adminPortal.layout.footer')

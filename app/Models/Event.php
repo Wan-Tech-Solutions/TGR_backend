@@ -15,7 +15,7 @@ class Event extends Model implements Auditable
         *
         * @var array<int, string>
         */
-        protected $fillable = ['event_date', 'event_time', 'event_title', 'event_people', 'status'];
+        protected $fillable = ['event_date', 'event_time', 'event_title', 'event_people', 'status', 'description', 'location', 'attachment', 'priority', 'color'];
 
         /**
         * The attributes that should be cast.

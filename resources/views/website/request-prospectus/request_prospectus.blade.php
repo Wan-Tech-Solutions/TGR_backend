@@ -88,27 +88,37 @@ Request Prospectus
                         </div>
                         <div class="row">
                             <div class="col">
-                                <form id="prospectusForm" action="{{ route('prospectus.store') }}" method="POST">
-                                    @csrf
-                                    <div class="mb-3">
-                                        <label for="emailInput" class="form-label text-white">Enter your Email address to download</label>
-                                        <input type="email" name="email" class="form-control" id="emailInput"
-                                            placeholder="Enter your email" required>
-                                    </div>
-                                    @error('email')
-                                    <span class="badge badge-danger">{{ $message }}</span>
-                                    @enderror
-                                    <button type="submit" class="btn btn-danger" id="submitBtn">Receive</button>
-                                </form>
                                 @if ($errors->any())
-                                    <div class="alert alert-danger mt-3">
-                                        <ul class="mb-0">
+                                    <div class="alert alert-danger mb-3" role="alert">
+                                        <strong>Please fix the following errors:</strong>
+                                        <ul class="mb-0 mt-2">
                                             @foreach ($errors->all() as $error)
                                                 <li>{{ $error }}</li>
                                             @endforeach
                                         </ul>
                                     </div>
                                 @endif
+                                
+                                @if(session('error'))
+                                    <div class="alert alert-danger mb-3" role="alert">
+                                        <strong>Error:</strong> {{ session('error') }}
+                                    </div>
+                                @endif
+                                
+                                <form id="prospectusForm" action="{{ route('prospectus.store') }}" method="POST">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label for="emailInput" class="form-label text-white">Enter your Email address to download</label>
+                                        <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" id="emailInput"
+                                            placeholder="Enter your email" value="{{ old('email') }}" required>
+                                        @error('email')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                    <button type="submit" class="btn btn-danger w-100" id="submitBtn">Receive Prospectus</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -122,14 +132,17 @@ Request Prospectus
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <h5 class="modal-title" id="successModalLabel">✓ Success!</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Prospectus have been sent to your email successfully. <br> If you haven't receive yet, kindly check spam box.</p>
+                <p class="mb-0">Your prospectus has been sent successfully!</p>
+                <p class="mb-0 mt-2"><strong>Please check your email inbox</strong> (or spam folder) for the prospectus download link.</p>
+                <p class="mb-0 mt-2 text-muted small">If you don't receive it within a few minutes, please contact our support team at <strong>info@tgrafrica.com</strong></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                <a href="{{ route('home') }}" class="btn btn-primary">Return to Home</a>
             </div>
         </div>
     </div>
@@ -142,9 +155,12 @@ Request Prospectus
         
         if (prospectusForm) {
             prospectusForm.addEventListener('submit', function(e) {
+                console.log('Form submitted');
                 // Disable button to prevent double submission
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = 'Sending...';
+                
+                // The form will submit naturally via POST
             });
         }
         
@@ -160,6 +176,16 @@ Request Prospectus
                 document.body.classList.remove('modal-open'); // Remove 'modal-open' class
                 document.querySelector('.modal-backdrop')?.remove(); // Remove any remaining backdrop
             });
+        }
+        @endif
+        
+        // Check for error messages as well
+        @if(session('error'))
+        const errorMessage = `{{ session('error') }}`;
+        alert(errorMessage);
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Receive';
         }
         @endif
     });

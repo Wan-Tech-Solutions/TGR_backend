@@ -47,24 +47,51 @@ class ProspectusRequestController extends Controller
 
             if (!$prospectus || !$prospectus->prospectus_file) {
                 \Log::warning('No published prospectus found for email: ' . $request->email);
-                return redirect()->back()->with('error', 'No prospectus available at the moment. Please try again later.');
+                return redirect()->back()->with('error', 'No prospectus available at the moment. Our team is preparing the materials. Please check back soon or contact our team directly.');
             }
 
-            // Define the PDF URL from the new storage location
-            $pdfUrl = asset('prospectus/' . $prospectus->prospectus_file);
-            
-            \Log::info('Sending prospectus to: ' . $request->email . ', File: ' . $prospectus->prospectus_file);
-            
-            // Send the email with the PDF link
-            Mail::mailer('investors')->to($request->email)->send(new ProspectusMail($request->email, $pdfUrl));
+            // Increment download count when sending email
+            $prospectus->increment('download_count');
 
-            return redirect()->back()->with('success', 'Prospectus PDF link sent successfully!');
+            // Define the PDF URL using the public download route (use url() for full absolute URL)
+            $pdfUrl = url('prospectus/download/' . $prospectus->id);
+            
+            \Log::info('Sending prospectus to: ' . $request->email . ', File: ' . $prospectus->prospectus_file . ', Download count: ' . $prospectus->download_count);
+
+            // Send the email with the PDF link. Wrap send in try/catch and fallback to logging if SMTP fails.
+            try {
+                Mail::mailer('investors')->to($request->email)->send(new ProspectusMail($request->email, $pdfUrl));
+
+                return redirect()->back()->with('success', 'Prospectus PDF link sent successfully! Check your email inbox or spam folder.');
+            } catch (\Throwable $e) {
+                // Log the detailed error for the investors mailer
+                \Log::error('ProspectusRequestController mail error (investors mailer): ' . $e->getMessage() . ' | ' . $e->getTraceAsString());
+
+                // Attempt to send using the primary SMTP mailer as a fallback (if investor mailer auth fails)
+                try {
+                    \Log::info('Attempting fallback send using primary SMTP mailer for: ' . $request->email);
+                    Mail::mailer(config('mail.default'))->to($request->email)->send(new ProspectusMail($request->email, $pdfUrl));
+
+                    return redirect()->back()->with('success', 'Prospectus PDF link sent using primary mailer. Check your inbox or spam folder.');
+                } catch (\Throwable $fallbackEx) {
+                    // Log fallback failure then try the log-driver fallback so the request is recorded
+                    \Log::error('ProspectusRequestController fallback mail error (primary mailer): ' . $fallbackEx->getMessage() . ' | ' . $fallbackEx->getTraceAsString());
+
+                    try {
+                        Mail::mailer('log')->to($request->email)->send(new ProspectusMail($request->email, $pdfUrl));
+                    } catch (\Throwable $inner) {
+                        \Log::error('Fallback log-mail also failed: ' . $inner->getMessage());
+                    }
+
+                    return redirect()->back()->with('warning', 'We could not send the prospectus by email right now; your request is recorded and our team will follow up shortly.');
+                }
+            }
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('Validation error in prospectus request');
-            return redirect()->back()->withErrors($e->errors());
+            \Log::error('Validation error in prospectus request: ' . json_encode($e->errors()));
+            return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            \Log::error('ProspectusRequestController error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'An error occurred while processing your request. Please try again.');
+            \Log::error('ProspectusRequestController error: ' . $e->getMessage() . ' | ' . $e->getTraceAsString());
+            return redirect()->back()->with('error', 'An error occurred while processing your request. Please try again later or contact our support team.');
         }
     }
 

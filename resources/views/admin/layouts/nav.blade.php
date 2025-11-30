@@ -76,6 +76,15 @@
           </a>
         </li>
 
+        <li class="sidebar-item">
+          <a href="{{ route('admin.newsletter') }}" class="sidebar-link">
+            <div class="round-16 d-flex align-items-center justify-content-center">
+              <i class="ti ti-mail"></i>
+            </div>
+            <span class="hide-menu">Newsletter</span>
+          </a>
+        </li>
+
         <li class="nav-small-cap">
           <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
           <span class="hide-menu">Others</span>

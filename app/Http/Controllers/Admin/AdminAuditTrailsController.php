@@ -18,7 +18,7 @@ class AdminAuditTrailsController extends Controller
     // 
     public function audit_trails(){
         $count_blogs = Blog::count('id');
-        $audits = Audit::with('user')->orderby('created_at','desc')->get();
+        $audits = Audit::with('user')->orderby('created_at','desc')->paginate(50);
         $contact_count = ContactUs::count('id');
         $founder_count = Founder::count('id');
         $prospectus_count = Prospectus::count('id');

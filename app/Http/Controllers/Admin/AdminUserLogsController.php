@@ -16,7 +16,7 @@ class AdminUserLogsController extends Controller
     //
     public function user_logs(){
         $count_blogs = Blog::count('id');
-        $activity = activityLog::orderby('id','desc')->get();
+        $activity = activityLog::orderby('id','desc')->paginate(50);
         $contact_count = ContactUs::count('id');
         $founder_count = Founder::count('id');
         $prospectus_count = Prospectus::count('id');

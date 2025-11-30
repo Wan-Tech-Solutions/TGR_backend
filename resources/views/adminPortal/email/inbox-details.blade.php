@@ -75,46 +75,68 @@
                         <ul class="dropdown-menu dropdown-menu-end">
                             @if($email->is_read)
                             <li>
-                                <a class="dropdown-item" href="{{ route('admin.email.inbox.mark-unread', $email->uuid) }}">
-                                    <i class="fas fa-envelope me-2"></i>Mark as Unread
-                                </a>
+                                <form action="{{ route('admin.email.inbox.mark-unread', $email->uuid) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-envelope me-2"></i>Mark as Unread
+                                    </button>
+                                </form>
                             </li>
                             @else
                             <li>
-                                <a class="dropdown-item" href="{{ route('admin.email.inbox.mark-read', $email->uuid) }}">
-                                    <i class="fas fa-envelope-open me-2"></i>Mark as Read
-                                </a>
+                                <form action="{{ route('admin.email.inbox.mark-read', $email->uuid) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-envelope-open me-2"></i>Mark as Read
+                                    </button>
+                                </form>
                             </li>
                             @endif
                             <li>
-                                <a class="dropdown-item" href="{{ route('admin.email.inbox.toggle-starred', $email->uuid) }}">
-                                    <i class="fas fa-star me-2"></i>{{ $email->is_starred ? 'Unstar' : 'Star' }}
-                                </a>
+                                <form action="{{ route('admin.email.inbox.toggle-starred', $email->uuid) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-star me-2"></i>{{ $email->is_starred ? 'Unstar' : 'Star' }}
+                                    </button>
+                                </form>
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             @if($email->status !== 'trash')
                             <li>
-                                <a class="dropdown-item" href="{{ route('admin.email.inbox.move-trash', $email->uuid) }}">
-                                    <i class="fas fa-trash me-2"></i>Move to Trash
-                                </a>
+                                <form action="{{ route('admin.email.inbox.move-trash', $email->uuid) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-trash me-2"></i>Move to Trash
+                                    </button>
+                                </form>
                             </li>
                             @else
                             <li>
-                                <a class="dropdown-item" href="{{ route('admin.email.inbox.restore-trash', $email->uuid) }}">
-                                    <i class="fas fa-undo me-2"></i>Restore
-                                </a>
+                                <form action="{{ route('admin.email.inbox.restore-trash', $email->uuid) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-undo me-2"></i>Restore
+                                    </button>
+                                </form>
                             </li>
                             <li>
-                                <a class="dropdown-item text-danger" href="{{ route('admin.email.inbox.destroy', $email->uuid) }}" 
-                                   onclick="return confirm('Permanently delete this email?')">
-                                    <i class="fas fa-times me-2"></i>Delete Permanently
-                                </a>
+                                <form action="{{ route('admin.email.inbox.destroy', $email->uuid) }}" method="POST" class="d-inline" 
+                                      onsubmit="return confirm('Permanently delete this email?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fas fa-times me-2"></i>Delete Permanently
+                                    </button>
+                                </form>
                             </li>
                             @endif
                             <li>
-                                <a class="dropdown-item" href="{{ route('admin.email.inbox.mark-spam', $email->uuid) }}">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>Mark as Spam
-                                </a>
+                                <form action="{{ route('admin.email.inbox.mark-spam', $email->uuid) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>Mark as Spam
+                                    </button>
+                                </form>
                             </li>
                         </ul>
                     </div>

@@ -118,7 +118,13 @@
                 <a href="{{route('admin.blogs')}}">
                   <i class="fas fa-book"></i>
                   <p>Blogs</p>
-                  <span class="badge badge-success">{{$count_blogs}}</span>
+                  <span class="badge badge-success">{{ $count_blogs ?? 0 }}</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.newsletter') }}">
+                  <i class="fas fa-newspaper"></i>
+                  <p>Newsletter</p>
                 </a>
               </li>
               {{-- <li class="nav-item">
@@ -132,7 +138,7 @@
                 <a href="{{route('administration.contact.response')}}">
                   <i class="fas fa-phone"></i>
                   <p>Contact Response</p>
-                  <span class="badge badge-success">{{$contact_count}}</span>
+                  <span class="badge badge-success">{{ $contact_count ?? 0 }}</span>
                 </a>
               </li>
               {{-- <li class="nav-item">
@@ -164,7 +170,7 @@
                 <a href="{{route('admin.prospectus')}}">
                   <i class="fas fa-users"></i>
                   <p>Prospectus</p>
-                  <span class="badge badge-success">{{$prospectus_count}}</span>
+                  <span class="badge badge-success">{{ $prospectus_count ?? 0 }}</span>
                 </a>
               </li>
               <li class="nav-item submenu">
