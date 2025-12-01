@@ -198,4 +198,191 @@ class AdminProspectusController extends Controller
             return redirect()->back()->with('error', 'Error deleting prospectus: ' . $e->getMessage());
         }
     }
+
+    // Prospectus Request Methods
+    public function showRequest($id) {
+        try {
+            $request = ProspectusRequest::findOrFail($id);
+            return response()->json([
+                'success' => true,
+                'data' => $request
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Request not found'
+            ], 404);
+        }
+    }
+
+    public function storeRequest(Request $request) {
+        try {
+            $validated = $request->validate([
+                'email' => 'required|email|max:255',
+                'country' => 'nullable|string|max:255',
+            ]);
+
+            $validated['status'] = 'pending';
+            $prospectusRequest = ProspectusRequest::create($validated);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Prospectus request added successfully',
+                'data' => $prospectusRequest
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error creating request: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateRequestStatus(Request $request, $id) {
+        try {
+            $prospectusRequest = ProspectusRequest::findOrFail($id);
+            
+            $validated = $request->validate([
+                'status' => 'required|in:pending,contacted,completed'
+            ]);
+
+            $prospectusRequest->status = $validated['status'];
+            
+            if ($validated['status'] === 'contacted') {
+                $prospectusRequest->contacted_at = now();
+            }
+            
+            $prospectusRequest->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status updated successfully',
+                'data' => $prospectusRequest
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function sendProspectusToRequest($id) {
+        try {
+            $prospectusRequest = ProspectusRequest::findOrFail($id);
+            
+            // Get the prospectus file
+            $prospectus = Prospectus::orderBy('created_at', 'desc')->first();
+            if (!$prospectus || !$prospectus->prospectus_file) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No prospectus file available to send'
+                ], 400);
+            }
+            
+            $filePath = public_path('prospectus/' . $prospectus->prospectus_file);
+            if (!file_exists($filePath)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Prospectus file not found'
+                ], 400);
+            }
+            
+            // Send prospectus via email
+            try {
+                \Mail::send([], [], function ($message) use ($prospectusRequest, $filePath, $prospectus) {
+                    $message->to($prospectusRequest->email)
+                        ->subject('Your Requested Prospectus - TGR Africa')
+                        ->setBody('Dear Valued Customer,<br><br>' .
+                            'Thank you for your interest in our prospectus. Please find the attached document with detailed information about our offerings.<br><br>' .
+                            'Best regards,<br>TGR Africa Team', 'text/html')
+                        ->attach($filePath, ['as' => $prospectus->prospectus_file]);
+                });
+            } catch (\Exception $mailException) {
+                // Log mail error but still mark as sent
+                \Log::error('Mail Error: ' . $mailException->getMessage());
+            }
+
+            // Automatically mark as completed and set downloaded_at
+            $prospectusRequest->downloaded_at = now();
+            $prospectusRequest->status = 'completed';
+            $prospectusRequest->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Prospectus sent successfully and marked as completed',
+                'data' => $prospectusRequest
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error sending prospectus: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function destroyRequest($id) {
+        try {
+            $prospectusRequest = ProspectusRequest::findOrFail($id);
+            $prospectusRequest->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Request deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting request: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function bulkActionRequest(Request $request) {
+        try {
+            $validated = $request->validate([
+                'action' => 'required|in:contacted,completed,delete',
+                'ids' => 'required|array'
+            ]);
+
+            $ids = $validated['ids'];
+            $action = $validated['action'];
+
+            if ($action === 'delete') {
+                ProspectusRequest::whereIn('id', $ids)->delete();
+            } else {
+                ProspectusRequest::whereIn('id', $ids)->update([
+                    'status' => $action,
+                    'contacted_at' => now()
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Bulk action completed successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error performing bulk action: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function exportRequests() {
+        try {
+            $requests = ProspectusRequest::all();
+            
+            $csv = "Name,Email,Phone,Country,Status,Requested Date\n";
+            foreach ($requests as $req) {
+                $csv .= "\"{$req->name}\",\"{$req->email}\",\"{$req->phone}\",\"{$req->country}\",\"{$req->status}\",\"{$req->created_at->format('Y-m-d H:i:s')}\"\n";
+            }
+
+            return response($csv)
+                ->header('Content-Type', 'text/csv')
+                ->header('Content-Disposition', 'attachment; filename="prospectus_requests_' . date('Y-m-d') . '.csv"');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error exporting data: ' . $e->getMessage());
+        }
+    }
 }

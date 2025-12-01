@@ -15,7 +15,11 @@ class AdminNoteController extends Controller
 
     public function index()
     {
-        return response()->json(Note::orderby('created_at','desc')->get());
+        $notes = Note::orderby('created_at','desc')
+            ->select(['id', 'title', 'content', 'created_at'])
+            ->limit(500)
+            ->get();
+        return response()->json($notes);
     }
 
     public function store(Request $request)
@@ -31,5 +35,36 @@ class AdminNoteController extends Controller
         ]);
 
         return redirect()->back()->with(['message' => 'Note added successfully!', 'note' => $note]);
+    }
+
+    public function show($id)
+    {
+        $note = Note::findOrFail($id);
+        return response()->json(['note' => $note]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $note = Note::findOrFail($id);
+        
+        $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+        ]);
+
+        $note->update([
+            'title' => $request->title,
+            'content' => $request->content,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Note updated successfully!']);
+    }
+
+    public function destroy($id)
+    {
+        $note = Note::findOrFail($id);
+        $note->delete();
+
+        return response()->json(['success' => true, 'message' => 'Note deleted successfully!']);
     }
 }

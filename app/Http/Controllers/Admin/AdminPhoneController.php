@@ -27,7 +27,17 @@ class AdminPhoneController extends Controller
             'address' => 'nullable|string'
         ]);
 
-        Contact::create($request->all());
+        // Handle nullable fields properly
+        $data = $request->only(['name', 'phone', 'email', 'website', 'address']);
+        
+        // Convert string "null" to actual null
+        foreach ($data as $key => $value) {
+            if ($value === 'null' || $value === '') {
+                $data[$key] = null;
+            }
+        }
+
+        Contact::create($data);
 
         return redirect()->back()->with(['message' => 'Contact added successfully!']);
     }
@@ -36,6 +46,41 @@ class AdminPhoneController extends Controller
     {
         $contacts = Contact::orderby('created_at','desc')->get();
         return response()->json($contacts);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $contact = Contact::findOrFail($id);
+        
+        $request->validate([
+            'name' => 'required',
+            'phone' => 'required',
+            'email' => 'nullable|email',
+            'website' => 'nullable|url',
+            'address' => 'nullable|string'
+        ]);
+
+        // Handle nullable fields properly
+        $data = $request->only(['name', 'phone', 'email', 'website', 'address']);
+        
+        // Convert string "null" to actual null
+        foreach ($data as $key => $value) {
+            if ($value === 'null' || $value === '') {
+                $data[$key] = null;
+            }
+        }
+
+        $contact->update($data);
+
+        return response()->json(['success' => true, 'message' => 'Contact updated successfully!']);
+    }
+
+    public function destroy($id)
+    {
+        $contact = Contact::findOrFail($id);
+        $contact->delete();
+
+        return response()->json(['success' => true, 'message' => 'Contact deleted successfully!']);
     }
 
 }

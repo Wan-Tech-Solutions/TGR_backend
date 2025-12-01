@@ -53,6 +53,7 @@ use App\Http\Controllers\Admin\AdminPhoneController;
 use App\Http\Controllers\Admin\AdminNoteController;
 use App\Http\Controllers\Admin\AdminIncomingEmailController;
 use App\Http\Controllers\Admin\AdminEmailAddressController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\NewsletterController;
@@ -104,8 +105,25 @@ Route::post('admin-consultations/{id}/send-rebook', [AdminConsultationsControlle
 Route::get('admin-consultations/{consultation}', [AdminConsultationsController::class, 'show'])->name('admin.consultations.show');
 Route::patch('admin-consultations/{consultation}/status', [AdminConsultationsController::class, 'updateStatus'])->name('admin.consultations.update-status');
 
+//Notifications Here
+Route::prefix('admin-notifications')->name('admin.notifications.')->group(function () {
+    Route::get('/', [NotificationController::class, 'index'])->name('index');
+    Route::get('/unread', [NotificationController::class, 'getUnread'])->name('unread');
+    Route::get('/count', [NotificationController::class, 'unreadCount'])->name('count');
+    Route::post('/{id}/mark-read', [NotificationController::class, 'markAsRead'])->name('mark-read');
+    Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
+    Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
+});
+
 //Prospectus Requests Here
 Route::get('admin-prospectus-requests', [AdminProspectusController::class, 'prospectus_requests'])->name('admin.prospectus.requests');
+Route::get('admin-prospectus-requests/{id}', [AdminProspectusController::class, 'showRequest'])->name('admin.prospectus.show-request');
+Route::post('admin-prospectus-requests', [AdminProspectusController::class, 'storeRequest'])->name('admin.prospectus.store');
+Route::put('admin-prospectus-requests/{id}/status', [AdminProspectusController::class, 'updateRequestStatus'])->name('admin.prospectus.update-status');
+Route::post('admin-prospectus-requests/{id}/send', [AdminProspectusController::class, 'sendProspectusToRequest'])->name('admin.prospectus.send');
+Route::delete('admin-prospectus-requests/{id}', [AdminProspectusController::class, 'destroyRequest'])->name('admin.prospectus.destroy-request');
+Route::post('admin-prospectus-requests/bulk-action', [AdminProspectusController::class, 'bulkActionRequest'])->name('admin.prospectus.bulk-action');
+Route::get('admin-prospectus-requests/export', [AdminProspectusController::class, 'exportRequests'])->name('admin.prospectus.export');
 
 //Blogs Here
 Route::get('admin-blogs', [AdminBlogsController::class, 'blogs'])->name('admin.blogs');
@@ -164,6 +182,8 @@ Route::get('tgr-chat', [AdminChatController::class, 'tgr_chat'])->name('admin.tg
 //Calender
 Route::get('tgr-calender', [AdminCalenderController::class, 'tgr_calender'])->name('admin.tgr.calender');
 Route::post('/events', [EventController::class, 'store']);
+Route::get('/events/{id}', [EventController::class, 'show']);
+Route::put('/events/{id}', [EventController::class, 'update']);
 Route::put('/events/{id}/complete', [EventController::class, 'markComplete']);
 Route::delete('/events/{id}', [EventController::class, 'destroy']);
 
@@ -172,11 +192,16 @@ Route::delete('/events/{id}', [EventController::class, 'destroy']);
 Route::get('tgr-phone', [AdminPhoneController::class, 'tgr_phone'])->name('admin.tgr.phone');
 Route::get('/contacts', [AdminPhoneController::class, 'index']);
 Route::post('/add-contacts', [AdminPhoneController::class, 'store']);
+Route::post('/contacts/{id}', [AdminPhoneController::class, 'update']);
+Route::delete('/contacts/{id}', [AdminPhoneController::class, 'destroy']);
 
 //Notes
 Route::get('tgr-note', [AdminNoteController::class, 'tgr_note'])->name('admin.tgr.notes');
 Route::get('/notes', [AdminNoteController::class, 'index'])->name('notes.index');
 Route::post('/add-notes', [AdminNoteController::class, 'store'])->name('notes.store');
+Route::get('/notes/{id}', [AdminNoteController::class, 'show']);
+Route::put('/notes/{id}', [AdminNoteController::class, 'update']);
+Route::delete('/notes/{id}', [AdminNoteController::class, 'destroy']);
 
 //Email Compose
 Route::get('admin-email-compose', [App\Http\Controllers\Admin\AdminEmailComposeController::class, 'compose'])->name('admin.email.compose');
@@ -351,6 +376,7 @@ Route::get('news', function () {
 // (requests to an existing public directory can be handled by the webserver and bypass
 // Laravel's front controller; using a different path avoids that.)
 Route::post('/prospectus-request', [ProspectusRequestController::class, 'store'])->name('prospectus.store');
+Route::get('/prospectus-request/{id}/detect-country', [ProspectusRequestController::class, 'detectCountry'])->name('prospectus.detect-country');
 Route::resource('seminars', SubscribeSeminarsController::class);
 Route::get('/subscribe-serminars', [SubscribeSeminarsController::class, 'index'])->name('seminarsindex');
 Route::post('/subscribed-users', [SubscribeSeminarsController::class, 'users_subscribed_semiars'])->name('subscribed-users');

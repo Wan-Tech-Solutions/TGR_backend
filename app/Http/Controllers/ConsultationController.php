@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Events\ConsultationCreated;
 use App\Http\Requests\StoreConsultationRequest;
 use App\Mail\ConsultationConfirmationMail;
 use App\Models\Consultation;
@@ -138,6 +139,9 @@ class ConsultationController extends Controller
                     'error' => $e->getMessage(),
                 ]);
             }
+
+            // Dispatch event to create notification and send admin email
+            ConsultationCreated::dispatch($consultation);
 
             // Check if parent has a paid payment; if so, reuse it
             if ($parentConsultation) {

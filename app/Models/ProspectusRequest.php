@@ -19,6 +19,9 @@ class ProspectusRequest extends Model implements Auditable
      */
     protected $fillable = [
         'email',
+        'country',
+        'status',
+        'downloaded_at',
     ];
 
     /**
@@ -27,6 +30,6 @@ class ProspectusRequest extends Model implements Auditable
      * @var array<string, string>
      */
     protected $casts = [
-
+        'downloaded_at' => 'datetime',
     ];
 }

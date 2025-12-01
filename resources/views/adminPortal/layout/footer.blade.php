@@ -21,7 +21,7 @@
   </footer>
 </div>
 
-<!-- Custom template | don't include it in your project! -->
+{{-- <!-- Custom template | don't include it in your project! -->
 <div class="custom-template">
   <div class="title">Settings</div>
   <div class="custom-content">
@@ -214,7 +214,7 @@
     <i class="icon-settings"></i>
   </div>
 </div>
-<!-- End Custom template -->
+<!-- End Custom template --> --}}
 </div>
 <!--   Core JS Files   -->
 <script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
@@ -338,5 +338,131 @@ $("#lineChart3").sparkline([105, 103, 123, 100, 95, 105, 115], {
     });
   });
 </script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const origin = location.origin;
+  const currentPath = (location.pathname || '/').replace(/\/+$/, '') || '/';
+
+  function hrefToPath(href) {
+    try {
+      const url = new URL(href, origin);
+      return (url.pathname || '/').replace(/\/+$/, '') || '/';
+    } catch (e) {
+      return (href || '').replace(/\/+$/, '') || '/';
+    }
+  }
+
+  // Reset previous states
+  document.querySelectorAll('.sidebar .nav-item.active').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.sidebar .nav-collapse a.active').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.sidebar .collapse.show').forEach(el => el.classList.remove('show'));
+  document.querySelectorAll('.sidebar .nav-item.open-toggle').forEach(el => el.classList.remove('open-toggle'));
+  document.querySelectorAll('.sidebar .nav-section.active-section').forEach(el => el.classList.remove('active-section'));
+  document.querySelectorAll('.sidebar [data-bs-toggle="collapse"]').forEach(toggle => {
+    toggle.setAttribute('aria-expanded', 'false');
+  });
+
+  // helper to find nearest previous .nav-section sibling
+  function findSectionFor(el) {
+    let current = el;
+    // walk up until root of sidebar-content or body
+    while (current && !current.classList?.contains('sidebar-content')) {
+      // if we find a nav-section as a previous sibling of any ancestor, return it
+      let prev = current.previousElementSibling;
+      while (prev) {
+        if (prev.classList.contains('nav-section')) return prev;
+        prev = prev.previousElementSibling;
+      }
+      current = current.parentElement;
+    }
+    return null;
+  }
+
+  // 1) handle nested submenu links (inside collapses)
+  const nestedLinks = document.querySelectorAll('.sidebar .nav-collapse a[href]');
+  nestedLinks.forEach(link => {
+    const linkPath = hrefToPath(link.getAttribute('href'));
+    const isActive = (currentPath === linkPath) || currentPath.startsWith(linkPath + '/');
+
+    if (isActive) {
+      // mark the sub-link
+      link.classList.add('active');
+
+      // highlight its containing section (if any)
+      const section = findSectionFor(link.closest('.nav-collapse, .collapse'));
+      if (section) section.classList.add('active-section');
+
+      // open the collapse container
+      const collapseEl = link.closest('.collapse');
+      if (collapseEl) {
+        collapseEl.classList.add('show');
+
+        // identify the toggle that controls this collapse
+        const collapseId = collapseEl.id ? ('#' + collapseEl.id) : null;
+        let toggle = null;
+        if (collapseId) {
+          toggle = document.querySelector(
+            '.sidebar [data-bs-toggle="collapse"][href="' + collapseId + '"], ' +
+            '.sidebar [data-bs-toggle="collapse"][data-bs-target="' + collapseId + '"]'
+          );
+        }
+        // fallback: try to find a sibling toggle in ancestor li
+        if (!toggle) {
+          const liWithCollapse = collapseEl.closest('li.nav-item');
+          if (liWithCollapse) toggle = liWithCollapse.querySelector('[data-bs-toggle="collapse"]');
+        }
+
+        if (toggle) {
+          toggle.setAttribute('aria-expanded', 'true');
+          const parentNavItem = toggle.closest('li.nav-item');
+          if (parentNavItem) {
+            parentNavItem.classList.add('active');
+            parentNavItem.classList.add('open-toggle'); // for caret rotate
+          }
+
+          // mark the section for the toggle too (helps for toggles placed in different spots)
+          const sectionForToggle = findSectionFor(toggle);
+          if (sectionForToggle) sectionForToggle.classList.add('active-section');
+        } else {
+          // no toggle found: mark the closest li.nav-item
+          const liWithCollapse = collapseEl.closest('li.nav-item');
+          if (liWithCollapse) liWithCollapse.classList.add('active');
+        }
+      }
+    }
+  });
+
+  // 2) handle top-level nav items
+  const directLinks = document.querySelectorAll('.sidebar .nav-secondary > .nav-item > a[href]');
+  directLinks.forEach(link => {
+    const linkPath = hrefToPath(link.getAttribute('href'));
+    const isActive = (currentPath === linkPath) || currentPath.startsWith(linkPath + '/');
+    const parentLi = link.closest('li.nav-item');
+
+    if (isActive) {
+      if (parentLi) parentLi.classList.add('active');
+      link.classList.add('active');
+
+      // section highlight for top-level item
+      const section = findSectionFor(parentLi);
+      if (section) section.classList.add('active-section');
+    }
+  });
+
+  // 3) If multiple top-level parents were opened, keep the one with visible active child; otherwise keep first
+  // (No extra code needed here as logic above marks only matching parents.)
+
+  // (Optional) Ensure only ONE nav-section remains active (clean up extras)
+  const activeSections = Array.from(document.querySelectorAll('.sidebar .nav-section.active-section'));
+  if (activeSections.length > 1) {
+    // keep the closest one to active link(s) if possible
+    const first = activeSections[0];
+    activeSections.forEach((s, idx) => { if (idx !== 0) s.classList.remove('active-section'); });
+  }
+});
+</script>
+
 </body>
 </html>
