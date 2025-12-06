@@ -20,6 +20,9 @@ class Visitor extends Model implements Auditable
     protected $fillable = [
         'ip_address',
         'visited_at',
+        'country_name',
+        'country_code',
+        'path',
     ];
 
     /**

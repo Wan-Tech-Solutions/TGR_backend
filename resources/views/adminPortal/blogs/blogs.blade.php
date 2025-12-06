@@ -2,7 +2,7 @@
 
 <div class="container-fluid px-4">
     <div class="page-inner py-4">
-        
+
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
@@ -57,10 +57,10 @@
         <!-- Stats Cards -->
         <div class="row g-4 mb-5">
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
+                <div class="card border-0 shadow-sm h-100 stat-card stat-primary">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-primary bg-opacity-10 text-white rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-primary bg-opacity-15 text-white rounded-3 p-3 me-3">
                                 <i class="fas fa-file-alt fa-lg"></i>
                             </div>
                             <div>
@@ -72,10 +72,10 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
+                <div class="card border-0 shadow-sm h-100 stat-card stat-success">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-success bg-opacity-10 text-white rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-success bg-opacity-15 text-white rounded-3 p-3 me-3">
                                 <i class="fas fa-eye fa-lg"></i>
                             </div>
                             <div>
@@ -87,10 +87,10 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
+                <div class="card border-0 shadow-sm h-100 stat-card stat-warning">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-warning bg-opacity-10 text-white rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-warning bg-opacity-15 text-white rounded-3 p-3 me-3">
                                 <i class="fas fa-clock fa-lg"></i>
                             </div>
                             <div>
@@ -102,10 +102,10 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
+                <div class="card border-0 shadow-sm h-100 stat-card stat-info">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-info bg-opacity-10 text-white rounded-2 p-3 me-3">
+                            <div class="stat-icon bg-info bg-opacity-15 text-white rounded-3 p-3 me-3">
                                 <i class="fas fa-calendar-alt fa-lg"></i>
                             </div>
                             <div>
@@ -159,7 +159,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="blog-icon bg-primary bg-opacity-10 text-white rounded-2 p-2 me-3">
+                                        <div class="blog-icon bg-primary bg-opacity-15 text-white rounded-2 p-2 me-3">
                                             <i class="fas fa-file-alt"></i>
                                         </div>
                                         <div>
@@ -169,13 +169,13 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <p class="text-muted mb-0 small lh-base">
-                                        {{ Str::limit(strip_tags($blog->content), 120) }}
+                                    <p class="text-muted mb-0 small lh-base blog-preview" title="{{ strip_tags($blog->content) }}">
+                                        {{ Str::limit(strip_tags($blog->content), 140) }}
                                     </p>
                                 </td>
                                 <td class="pe-4">
                                     <div class="d-flex gap-2">
-                                        <a href="{{ route('admin.blogs.edit', $blog->uuid) }}" 
+                                        <a href="{{ route('admin.blogs.edit', $blog->uuid) }}"
                                            class="btn btn-sm btn-outline-primary d-flex align-items-center"
                                            data-bs-toggle="tooltip" title="Edit Blog">
                                             <i class="fas fa-edit me-1"></i> Edit
@@ -183,9 +183,9 @@
                                         <form action="{{ route('admin.blogs.destroy', $blog->uuid) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" 
+                                            <button type="submit"
                                                     class="btn btn-sm btn-outline-danger d-flex align-items-center"
-                                                    data-bs-toggle="tooltip" 
+                                                    data-bs-toggle="tooltip"
                                                     title="Delete Blog"
                                                     onclick="return confirm('Are you sure you want to delete this blog?')">
                                                 <i class="fas fa-trash me-1"></i> Delete
@@ -241,15 +241,15 @@
             </div>
             <form action="{{ route('admin.blogs.store') }}" method="POST">
                 @csrf
-                <div class="modal-body py-4">
+                <div class="modal-body py-4" style="max-height: 70vh; overflow-y: auto;">
                     <div class="row g-4">
                         <div class="col-12">
                             <div class="form-group">
                                 <label for="blogTitle" class="form-label small fw-semibold text-muted text-uppercase">Blog Title</label>
-                                <input type="text" 
-                                       class="form-control form-control-lg" 
-                                       id="blogTitle" 
-                                       name="title" 
+                                <input type="text"
+                                       class="form-control form-control-lg"
+                                       id="blogTitle"
+                                       name="title"
                                        placeholder="Enter a compelling title for your blog post"
                                        required>
                                 <div class="form-text text-muted">Make it catchy and descriptive</div>
@@ -258,13 +258,11 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label for="blogContent" class="form-label small fw-semibold text-muted text-uppercase">Blog Content</label>
-                                <textarea class="form-control" 
-                                          id="blogContent" 
-                                          name="content" 
-                                          rows="8" 
-                                          placeholder="Write your blog content here..."
-                                          required></textarea>
-                                <div class="form-text text-muted">You can use rich text formatting</div>
+                                <!-- Quill Editor Container -->
+                                <div id="editor-container" class="rounded border" style="height: 300px; background-color: #fff;"></div>
+                                <!-- Hidden textarea to store content -->
+                                <textarea name="content" id="blogContent" style="display: none;" required></textarea>
+                                <div class="form-text text-muted mt-2">Write your blog content with rich formatting options</div>
                             </div>
                         </div>
                     </div>
@@ -284,27 +282,71 @@
 
 <style>
 .card {
-    transition: transform 0.2s ease;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.08);
 }
 
-.stat-icon {
-    width: 56px;
-    height: 56px;
-    display: flex;
+/* Stat cards */
+.stat-card {
+    border-radius: 14px;
+    border: 1px solid rgba(17, 24, 39, 0.06) !important;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.stat-card .card-body {
+    padding: 22px;
+}
+
+.stat-card .stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px !important;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.stat-card h3 {
+    letter-spacing: -0.2px;
+}
+
+.stat-card p {
+    letter-spacing: 0.3px;
+}
+
+.stat-card:hover {
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.1);
+}
+
+.stat-primary {
+    background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+}
+
+.stat-success {
+    background: linear-gradient(135deg, #ecfdf3 0%, #ffffff 100%);
+}
+
+.stat-warning {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffffff 100%);
+}
+
+.stat-info {
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
 }
 
 .blog-icon {
     width: 44px;
     height: 44px;
     display: flex;
-    align-items-center;
+    align-items: center;
     justify-content: center;
+    border-radius: 12px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 .table th {
@@ -318,7 +360,19 @@
 
 .table td {
     vertical-align: middle;
-    padding: 1rem 0.75rem;
+    padding: 0.9rem 0.75rem;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.blog-preview {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-width: 100%;
 }
 
 .empty-state {
@@ -356,21 +410,74 @@
     .d-flex.flex-lg-row {
         flex-direction: column !important;
     }
-    
+
     .input-group {
         width: 100% !important;
         margin-top: 1rem;
     }
-    
+
     .table-responsive {
         font-size: 0.875rem;
     }
-    
+
     .btn-sm {
         padding: 0.25rem 0.5rem;
         font-size: 0.75rem;
     }
 }
 </style>
+
+<!-- Quill Rich Text Editor CDN -->
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
+<script>
+    // Initialize Quill editor when modal is shown
+    let quill = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Quill editor
+        quill = new Quill('#editor-container', {
+            theme: 'snow',
+            placeholder: 'Write your blog content here...',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['blockquote', 'code-block'],
+                    [{ 'header': 1 }, { 'header': 2 }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'script': 'sub'}, { 'script': 'super' }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    [{ 'size': ['small', false, 'large', 'huge'] }],
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'font': [] }],
+                    [{ 'align': [] }],
+                    ['clean'],
+                    ['link', 'image', 'video']
+                ]
+            }
+        });
+
+        // Handle form submission
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // Get content from Quill editor
+                const content = quill.root.innerHTML;
+                document.getElementById('blogContent').value = content;
+            });
+        }
+
+        // Clear editor when modal is closed
+        const modal = document.getElementById('addBlogModal');
+        if (modal) {
+            modal.addEventListener('hidden.bs.modal', function() {
+                quill.setContents([]);
+                document.getElementById('blogTitle').value = '';
+            });
+        }
+    });
+</script>
 
 @include('adminPortal.layout.footer')

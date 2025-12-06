@@ -4,6 +4,51 @@
 @endsection
 @section('content')
     <style>
+        /* Hero carousel responsiveness/performance tweaks */
+        .hero-carousel {
+            height: 72vh;
+            min-height: 480px;
+        }
+
+        .hero-carousel .owl-stage-outer,
+        .hero-carousel .owl-stage,
+        .hero-carousel .owl-item,
+        .hero-carousel .hero-slide,
+        .hero-carousel .hero-slide > .container,
+        .hero-carousel .hero-slide .row {
+            height: 100%;
+        }
+
+        .hero-slide {
+            background-size: cover;
+            background-position: center;
+        }
+
+        @media (max-width: 991px) {
+            .hero-carousel {
+                height: 60vh;
+                min-height: 420px;
+            }
+
+            .hero-carousel h1 {
+                font-size: 2.4rem;
+            }
+
+            .hero-carousel h3 {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .hero-carousel {
+                height: 48vh;
+                min-height: 360px;
+            }
+
+            .hero-carousel .btn {
+                padding: 10px 18px;
+            }
+        }
        /* Popup container to center the popup */
 #overlay {
     display: none; /* Hidden by default */
@@ -89,57 +134,7 @@
 }
 
 
-        /*New adjustment*/
-        @media (max-width: 768px) {
-            #header {
-                position: relative;
-                height: auto;
-                top: 0;
-                position: relative;
-                z-index: 1;
-            }
-
-            .header-nav-top ul.nav {
-                display: flex;
-                flex-direction: column;
-                /* Stack nav items */
-                padding: 0;
-            }
-
-            .header-body {
-                padding: 10px;
-                /* Reduce padding for smaller screens */
-            }
-        }
-
-        @media (min-width: 769px) and (max-width: 1024px) {
-            #header {
-                position: relative;
-                top: 0;
-                height: auto;
-            }
-
-            .header-nav-top ul.nav {
-                display: flex;
-                justify-content: space-between;
-                /* Spread items evenly */
-            }
-        }
-
-        @media (max-width: 768px) {
-
-            .header-top .container,
-            .header-container .container {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .header-logo img {
-                width: 100px;
-                /* Adjust logo size for mobile */
-            }
-        }
+        /* Header mobile styles moved to global custom.css to avoid overrides */
     </style>
 
 
@@ -184,14 +179,13 @@
 
 <!-- End of Book popup -->
     <div role="main" class="main">
-        <div class="owl-carousel owl-carousel-light owl-carousel-light-init-fadeIn owl-theme manual dots-inside dots-horizontal-center show-dots-hover show-dots-xs nav-style-1 nav-inside nav-inside-plus nav-dark nav-lg nav-font-size-lg show-nav-hover mb-0"
-            data-plugin-options="{'autoplayTimeout': 7000}" data-dynamic-height="['650px','650px','650px','550px','500px']"
-            style="height: 650px;">
+        <div class="owl-carousel owl-carousel-light owl-carousel-light-init-fadeIn owl-theme manual dots-inside dots-horizontal-center show-dots-hover show-dots-xs nav-style-1 nav-inside nav-inside-plus nav-dark nav-lg nav-font-size-lg show-nav-hover mb-0 hero-carousel"
+            data-plugin-options="{'autoplayTimeout': 7000}" data-dynamic-height="['580px','520px','480px','420px','380px']">
             <div class="owl-stage-outer">
                 <div class="owl-stage">
                     <!-- Carousel Slide 1 -->
-                    <div class="owl-item position-relative"
-                        style="background-image: url(img/slides/slide-corporate-3-2.jpg); background-size: cover; background-position: center;">
+                    <div class="owl-item position-relative hero-slide"
+                        style="background-image: url(img/slides/slide-corporate-3-2.jpg);">
                         <div class="container position-relative z-index-1 h-100">
                             <div class="row align-items-center h-100">
                                 <div class="col-lg-6 text-center">
@@ -226,10 +220,9 @@
                                             style="color: white" data-appear-animation="blurIn"
                                             data-appear-animation-delay="500" data-plugin-options="{'minWindowWidth': 0}">
                                             HOME & HEART</h1>
-                                        <p class="text-4-5 text-color-white font-weight-light mb-0" style="color: white"
-                                            data-plugin-animated-letters
-                                            data-plugin-options="{'startDelay': 1000, 'minWindowWidth': 0}">welcome to The
-                                            Great Return</p>
+                                        <p class="text-4-5 text-color-white font-weight-light mb-0" style="color: white; font-size: 1.3rem; line-height: 1.5;">
+                                            welcome to <strong>The Great Return</strong>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -237,7 +230,7 @@
                     </div>
 
                     <!-- Carousel Slide 2 -->
-                    <div class="owl-item position-relative overflow-hidden">
+                    <div class="owl-item position-relative overflow-hidden hero-slide">
                         <div class="background-image-wrapper position-absolute top-0 left-0 right-0 bottom-0"
                             data-appear-animation="kenBurnsToRight" data-appear-animation-duration="13s"
                             data-plugin-options="{'minWindowWidth': 0}" data-carousel-onchange-show
@@ -247,13 +240,12 @@
                             <div class="row justify-content-center align-items-center h-100">
                                 <div class="col-lg-7">
                                     <div class="d-flex flex-column align-items-center">
-                                        <h2 class="text-color-dark font-weight-extra-bold text-12-5 line-height-1 text-center mb-3 appear-animation"
+                                        <h1 class="text-color-dark font-weight-extra-bold text-12-5 line-height-1 text-center mb-3 appear-animation"
                                             data-appear-animation="blurIn" data-appear-animation-delay="500"
-                                            data-plugin-options="{'minWindowWidth': 0}">HOMECOMING</h2>
-                                        <p class="text-4-5 text-color-dark font-weight-light text-center mb-4"
-                                            data-plugin-animated-letters
-                                            data-plugin-options="{'startDelay': 1000, 'minWindowWidth': 0, 'animationSpeed': 30}">
-                                            Where Every Story Begins Anew</p>
+                                            data-plugin-options="{'minWindowWidth': 0}">HOMECOMING</h1>
+                                                <p class="text-4-5 font-weight-light text-center mb-4"
+                                                    style="background:#ef4444; color:#fff; display:inline-block; padding:10px 16px; border-radius:8px;">
+                                                    Where Every Story Begins..</p>
                                         <a href="#"
                                             class="btn btn-secondary btn-modern font-weight-bold text-2 py-3 btn-px-5 mt-2 appear-animation"
                                             data-appear-animation="fadeInUpShorter" data-appear-animation-delay="2500"
@@ -315,7 +307,6 @@
                         <p>
                             If you are ready to join
                             <span class="highlighted-word">‘The Great Return’</span>
-                            {{-- <span>, please book a consultation or email us.</span> --}}
                         </p>
                     </div>
                     <div class="col-lg-4">
@@ -493,22 +484,4 @@
             </div>
         </div>
     </section>
-
-    <!-- <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var show_delay = 0; // Show immediately on page load
-            var hide_delay = 10000; // Hide after 30 seconds
-            setTimeout(function() {
-                document.getElementById('overlay').style.display = 'block';
-            }, show_delay);
-            // Hide the popup after the specified duration
-            setTimeout(function() {
-                document.getElementById('overlay').style.display = 'none';
-            }, show_delay + hide_delay);
-            // Close button functionality
-            document.getElementById('iclose').onclick = function() {
-                document.getElementById('overlay').style.display = 'none';
-            };
-        });
-    </script> -->
 @endsection

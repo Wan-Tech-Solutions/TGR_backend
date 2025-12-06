@@ -48,6 +48,7 @@ use App\Http\Controllers\Admin\AdminAuditTrailsController;
 use App\Http\Controllers\Admin\AdminUserLogsController;
 use App\Http\Controllers\Admin\AdminEmailController;
 use App\Http\Controllers\Admin\AdminChatController;
+use App\Http\Controllers\RsvpController;
 use App\Http\Controllers\Admin\AdminCalenderController;
 use App\Http\Controllers\Admin\AdminPhoneController;
 use App\Http\Controllers\Admin\AdminNoteController;
@@ -57,6 +58,10 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\NewsletterController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,6 +84,10 @@ Route::middleware(['auth'])->group(function () {
 Route::get('admin-home', [AdminHomeController::class, 'index'])->name('admin.home.dashboard');
 Route::get('layout', [AdminHomeController::class, 'layout']);
 
+// Activity Logs
+Route::get('admin-activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.logs');
+Route::get('admin-activity-logs/export', [\App\Http\Controllers\Admin\ActivityLogController::class, 'export'])->name('admin.activity.export');
+
 //Contact Here
 Route::get('admin-contact', [AdminContactController::class, 'contact'])->name('administration.contact.response');
 Route::post('admin-contact/{id}/respond', [AdminContactController::class, 'markAsResponded'])->name('admin.contact.mark-responded');
@@ -88,12 +97,15 @@ Route::delete('admin-contact/{id}', [AdminContactController::class, 'delete'])->
 Route::get('admin-founders', [AdminFoundersController::class, 'founders'])->name('admin.founders');
 
 
-//Subscribers Here 
+//Subscribers Here
 Route::get('admin-subscribers', [AdminSubscribersController::class, 'subscribers'])->name('admin.subscribers');
 //Newsletter subscribers (admin view)
 Route::get('admin-newsletter', [NewsletterController::class, 'index'])->name('admin.newsletter');
 Route::post('admin-newsletter/send', [NewsletterController::class, 'send'])->name('admin.newsletter.send');
 Route::post('admin-newsletter/{id}/unsubscribe', [NewsletterController::class, 'adminUnsubscribe'])->name('admin.newsletter.unsubscribe');
+
+// RSVP responses
+Route::get('admin-rsvps', [RsvpController::class, 'adminIndex'])->name('admin.rsvps');
 Route::delete('admin-newsletter/{id}', [NewsletterController::class, 'adminDelete'])->name('admin.newsletter.delete');
 Route::post('admin-newsletter/{id}/reactivate', [NewsletterController::class, 'adminReactivate'])->name('admin.newsletter.reactivate');
 Route::get('admin-newsletter/export', [NewsletterController::class, 'exportCsv'])->name('admin.newsletter.export');
@@ -186,6 +198,11 @@ Route::get('/events/{id}', [EventController::class, 'show']);
 Route::put('/events/{id}', [EventController::class, 'update']);
 Route::put('/events/{id}/complete', [EventController::class, 'markComplete']);
 Route::delete('/events/{id}', [EventController::class, 'destroy']);
+
+// Consultation exports
+Route::get('/admin-consultations/export/csv', [AdminHomeController::class, 'exportConsultationsCsv'])->name('admin.consultations.export.csv');
+Route::get('/admin-consultations/export/pdf', [AdminHomeController::class, 'exportConsultationsPdf'])->name('admin.consultations.export.pdf');
+Route::get('/admin-traffic/export/csv', [AdminHomeController::class, 'exportTrafficCsv'])->name('admin.traffic.export.csv');
 
 
 //Phone Book
@@ -360,6 +377,46 @@ Route::post('/user-account', [RegisterController::class, 'register'])->name('use
 Route::post('user-login', [Log_in_and_out_Controller::class, 'Log_in'])->name('login-user');
 Route::get('logout', [Log_in_and_out_Controller::class, 'Logout'])->name('logout')
     ->middleware('auth');
+// Password reset (frontend) - allow even if currently signed in
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->name('password.request');
+
+Route::post('/forgot-password', function (Request $request) {
+    $request->validate(['email' => 'required|email']);
+
+    $status = Password::sendResetLink($request->only('email'));
+
+    return $status === Password::RESET_LINK_SENT
+        ? back()->with(['status' => __($status)])
+        : back()->withErrors(['email' => __($status)]);
+})->name('password.email');
+
+Route::get('/reset-password/{token}', function (Request $request, string $token) {
+    return view('auth.reset-password', ['request' => $request, 'token' => $token]);
+})->name('password.reset');
+
+Route::post('/reset-password', function (Request $request) {
+    $request->validate([
+        'token' => 'required',
+        'email' => 'required|email',
+        'password' => 'required|min:8|confirmed',
+    ]);
+
+    $status = Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function ($user, $password) {
+            $user->forceFill([
+                'password' => Hash::make($password),
+                'remember_token' => Str::random(60),
+            ])->save();
+        }
+    );
+
+    return $status === Password::PASSWORD_RESET
+        ? redirect()->route('login')->with('status', __($status))
+        : back()->withErrors(['email' => [__($status)]]);
+})->name('password.update');
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -406,7 +463,7 @@ Route::prefix('contact-us')->group(function () {
 // });
 Route::prefix('admin')->name('admin.')->group(function () {
 
-    
+
     // Old blog routes - replaced with new AdminBlogsController routes in admin portal
     // Route::resource('blogs', BlogController::class);
     // Route::get('/', [BlogController::class, 'index'])->name('blogs.index');
@@ -539,3 +596,9 @@ Route::group(['prefix' => 'settings'], function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard'); // Ensure this route exists
     });
 });
+
+// RSVP Routes (Public - No authentication required)
+Route::get('/rsvp/{eventId}/{response}', [RsvpController::class, 'respond'])->name('rsvp.response')
+    ->where('response', 'yes|no|maybe');
+Route::post('/rsvp/{eventId}/{response}', [RsvpController::class, 'submit'])->name('rsvp.submit')
+    ->where('response', 'yes|no|maybe');

@@ -1,10 +1,48 @@
 @include('adminPortal.layout.header')
 
+@push('styles')
+<style>
+  .dashboard-hero {
+    background: linear-gradient(135deg, #fef2f2, #f8fafc);
+    border: 1px solid #f3f4f6;
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  }
+  .stat-card {
+    border: 1px solid #f3f4f6;
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  }
+  .stat-card .progress {
+    height: 6px;
+    border-radius: 8px;
+    background: #f5f6f7;
+  }
+  .card-modern {
+    border: 1px solid #f1f5f9;
+    border-radius: 14px;
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.06);
+  }
+  .card-modern .card-header {
+    border-bottom: 1px solid #f1f5f9;
+    padding: 16px 18px;
+  }
+  .table-modern thead {
+    background: #f8fafc;
+  }
+  .table-modern th, .table-modern td {
+    vertical-align: middle;
+  }
+  .geo-filter input[type="date"] {
+    min-width: 140px;
+  }
+</style>
+@endpush
+
         <div class="container">
           <div class="page-inner">
-            <div
-              class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
-            >
+            <div class="dashboard-hero d-flex align-items-left align-items-md-center flex-column flex-md-row mb-4">
               <div>
                 @php
                     $hour = date('H');
@@ -16,7 +54,7 @@
                         $greeting = "Good Evening";
                     }
                 @endphp
-                
+
                 <h3 class="fw-bold mb-3">{{ $greeting }}, Super Admin</h3>
 
                 <h6 class="op-7 mb-2">Welcome to the TGR Africa Dashboard</h6>
@@ -28,7 +66,7 @@
             </div>
             <div class="row row-card-no-pd">
               <div class="col-12 col-sm-6 col-md-6 col-xl-3">
-                <div class="card">
+                <div class="card stat-card card-modern">
                   <div class="card-body">
                     <div class="d-flex justify-content-between">
                       <div>
@@ -42,24 +80,18 @@
                         class="progress-bar bg-info w-75"
                         role="progressbar"
                         aria-valuenow="{{$count_blogs}}"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
                       ></div>
-                    </div>
-                    <div class="d-flex justify-content-between mt-2">
-                      <p class="text-muted mb-0">Change</p>
-                      <p class="text-muted mb-0">0%</p>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="col-12 col-sm-6 col-md-6 col-xl-3">
-                <div class="card">
+                <div class="card stat-card card-modern">
                   <div class="card-body">
                     <div class="d-flex justify-content-between">
                       <div>
                         <h6><b>Contact Response</b></h6>
-                        <p class="text-muted">Overal contact feedback</p>
+                        <p class="text-muted">Contact feedback</p>
                       </div>
                       <h4 class="text-success fw-bold">{{$contact_count}}</h4>
                     </div>
@@ -68,19 +100,13 @@
                         class="progress-bar bg-success w-25"
                         role="progressbar"
                         aria-valuenow="{{$contact_count}}"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
                       ></div>
-                    </div>
-                    <div class="d-flex justify-content-between mt-2">
-                      <p class="text-muted mb-0">Change</p>
-                      <p class="text-muted mb-0">0%</p>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="col-12 col-sm-6 col-md-6 col-xl-3">
-                <div class="card">
+                <div class="card stat-card card-modern">
                   <div class="card-body">
                     <div class="d-flex justify-content-between">
                       <div>
@@ -94,19 +120,13 @@
                         class="progress-bar bg-danger w-50"
                         role="progressbar"
                         aria-valuenow="{{$prospectus_count }}"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
                       ></div>
-                    </div>
-                    <div class="d-flex justify-content-between mt-2">
-                      <p class="text-muted mb-0">Change</p>
-                      <p class="text-muted mb-0">0%</p>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="col-12 col-sm-6 col-md-6 col-xl-3">
-                <div class="card">
+                <div class="card stat-card card-modern">
                   <div class="card-body">
                     <div class="d-flex justify-content-between">
                       <div>
@@ -120,13 +140,7 @@
                         class="progress-bar bg-secondary w-25"
                         role="progressbar"
                         aria-valuenow="{{$consultation_count}}"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
                       ></div>
-                    </div>
-                    <div class="d-flex justify-content-between mt-2">
-                      <p class="text-muted mb-0">Change</p>
-                      <p class="text-muted mb-0">0%</p>
                     </div>
                   </div>
                 </div>
@@ -134,13 +148,13 @@
             </div>
             <div class="row">
               <div class="col-md-8">
-                <div class="card">
+                <div class="card card-modern">
                   <div class="card-header">
                     <div class="card-head-row">
                       <div class="card-title">Traffic Summary</div>
                       <div class="card-tools">
                         <a
-                          href="#"
+                          href="{{ route('admin.traffic.export.csv') }}"
                           class="btn btn-label-success btn-round btn-sm me-2"
                         >
                           <span class="btn-label">
@@ -166,7 +180,7 @@
                 </div>
               </div>
               <div class="col-md-4">
-                <div class="card card-primary">
+                <div class="card card-primary card-modern">
                   <div class="card-header">
                     <div class="card-head-row">
                       <div class="card-title">Upcoming Consultations</div>
@@ -186,8 +200,8 @@
                             class="dropdown-menu"
                             aria-labelledby="dropdownMenuButton"
                           >
-                            <a class="dropdown-item" href="#">Excel</a>
-                            <a class="dropdown-item" href="#">PDF</a>
+                            <a class="dropdown-item" href="{{ route('admin.consultations.export.csv') }}">Excel (CSV)</a>
+                            <a class="dropdown-item" href="{{ route('admin.consultations.export.pdf') }}">PDF</a>
                           </div>
                         </div>
                       </div>
@@ -207,21 +221,63 @@
                     </div>
                   </div>
                 </div>
-                <div class="card">
-                  <div class="card-body pb-0">
-                    <div class="h1 fw-bold float-end text-primary">0</div>
-                    <h2 class="mb-2">0</h2>
-                    <p class="text-muted">Users online</p>
-                    <div class="pull-in sparkline-fix">
-                      <div id="lineChart"></div>
-                    </div>
+                <div class="card card-modern">
+                  <div class="card-header">
+                    <div class="card-title">Users Online</div>
+                    <p class="card-category mb-0">
+                      <span class="badge badge-success">{{ $usersOnline ?? 0 }}</span> {{ $usersOnline == 1 ? 'user' : 'users' }} active now
+                    </p>
+                  </div>
+                  <div class="card-body pb-2" style="max-height: 300px; overflow-y: auto;">
+                    @php
+                      $onlineUsers = $onlineUsersList ?? collect();
+                    @endphp
+
+                    @forelse($onlineUsers as $user)
+                      @php
+                        $lastActivity = \Carbon\Carbon::parse($user->last_activity);
+                        $now = now();
+                        $diffInSeconds = $now->diffInSeconds($lastActivity);
+
+                        if ($diffInSeconds < 60) {
+                          $timeOnline = 'Just now';
+                        } elseif ($diffInSeconds < 120) {
+                          $timeOnline = '1 min ago';
+                        } elseif ($diffInSeconds < 3600) {
+                          $timeOnline = floor($diffInSeconds / 60) . ' mins ago';
+                        } else {
+                          $timeOnline = floor($diffInSeconds / 3600) . ' hrs ago';
+                        }
+                      @endphp
+
+                      <div class="d-flex align-items-center mb-3">
+                        <div class="avatar avatar-online me-3">
+                          <span class="avatar-title rounded-circle border border-white bg-success text-white">
+                            {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
+                          </span>
+                        </div>
+                        <div class="flex-1">
+                          <h6 class="mb-0 fw-bold">{{ $user->name ?? 'Unknown User' }}</h6>
+                          <small class="text-muted d-block">{{ $user->email }}</small>
+                          <small class="text-success">
+                            <i class="fas fa-circle" style="font-size: 8px;"></i> {{ $timeOnline }}
+                          </small>
+                        </div>
+                      </div>
+                      <div class="separator-dashed"></div>
+                    @empty
+                      <div class="text-center text-muted py-4">
+                        <i class="fas fa-user-slash fa-2x mb-2"></i>
+                        <p class="mb-0">No users currently online</p>
+                      </div>
+                    @endforelse
                   </div>
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-md-8">
-                <div class="card">
+                <div class="card card-modern">
                   <div class="card-header">
                     <div class="card-title">Page visits</div>
                   </div>
@@ -238,26 +294,25 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <th scope="row">/index/</th>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>
-                              <i class="fas fa-arrow-up text-success me-3"></i>
-                              0%
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">/tgrafrica/contact</th>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>
-                              <i
-                                class="fas fa-arrow-down text-warning me-3"
-                              ></i>
-                              0%
-                            </td>
-                          </tr>
+                          @php
+                            $pageRows = $pageVisits ?? collect();
+                          @endphp
+
+                          @forelse($pageRows as $row)
+                            <tr>
+                              <th scope="row">/{{ ltrim($row->path ?? 'unknown', '/') }}</th>
+                              <td>{{ $row->visits }}</td>
+                              <td>{{ $row->unique_users }}</td>
+                              <td>
+                                <i class="fas fa-minus text-muted me-2"></i>
+                                --
+                              </td>
+                            </tr>
+                          @empty
+                            <tr>
+                              <td colspan="4" class="text-center text-muted py-3">No page visit data yet</td>
+                            </tr>
+                          @endforelse
                         </tbody>
                       </table>
                     </div>
@@ -265,7 +320,7 @@
                 </div>
               </div>
               <div class="col-md-4">
-                <div class="card">
+                <div class="card card-modern">
                   <div class="card-header">
                     <div class="card-title">Top Blogs</div>
                   </div>
@@ -295,16 +350,21 @@
             </div>
             <div class="row row-card-no-pd">
               <div class="col-md-12">
-                <div class="card">
-                  <div class="card-header">
-                    <div class="card-head-row card-tools-still-right">
-                      <h4 class="card-title">Geolocation Visits</h4>
-                      <div class="card-tools">
-                        <button
-                          class="btn btn-icon btn-link btn-primary btn-xs"
-                        >
-                          <span class="fa fa-angle-down"></span>
-                        </button>
+                <div class="card card-modern">
+          <div class="card-header">
+            <div class="card-head-row card-tools-still-right">
+              <h4 class="card-title">Geolocation Visits</h4>
+              <div class="card-tools">
+                <form method="GET" class="d-flex align-items-center gap-2">
+                  <input type="date" name="geo_start" class="form-control form-control-sm" value="{{ request('geo_start') }}">
+                  <input type="date" name="geo_end" class="form-control form-control-sm" value="{{ request('geo_end') }}">
+                  <button type="submit" class="btn btn-sm btn-outline-primary">Filter</button>
+                </form>
+                <button
+                  class="btn btn-icon btn-link btn-primary btn-xs"
+                >
+                  <span class="fa fa-angle-down"></span>
+                </button>
                         <button
                           class="btn btn-icon btn-link btn-primary btn-xs btn-refresh-card"
                         >
@@ -327,84 +387,34 @@
                         <div class="table-responsive table-hover table-sales">
                           <table class="table">
                             <tbody>
-                              <tr>
-                                <td>
-                                  <div class="flag">
-                                    <img
-                                      src="assets/img/flags/id.png"
-                                      alt="indonesia"
-                                    />
-                                  </div>
-                                </td>
-                                <td>Indonesia</td>
-                                <td class="text-end">0</td>
-                                <td class="text-end">0%</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <div class="flag">
-                                    <img
-                                      src="assets/img/flags/us.png"
-                                      alt="united states"
-                                    />
-                                  </div>
-                                </td>
-                                <td>USA</td>
-                                <td class="text-end">0</td>
-                                <td class="text-end">0%</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <div class="flag">
-                                    <img
-                                      src="assets/img/flags/au.png"
-                                      alt="australia"
-                                    />
-                                  </div>
-                                </td>
-                                <td>Australia</td>
-                                <td class="text-end">0</td>
-                                <td class="text-end">0%</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <div class="flag">
-                                    <img
-                                      src="assets/img/flags/ru.png"
-                                      alt="russia"
-                                    />
-                                  </div>
-                                </td>
-                                <td>Russia</td>
-                                <td class="text-end">0</td>
-                                <td class="text-end">0%</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <div class="flag">
-                                    <img
-                                      src="assets/img/flags/cn.png"
-                                      alt="china"
-                                    />
-                                  </div>
-                                </td>
-                                <td>China</td>
-                                <td class="text-end">0</td>
-                                <td class="text-end">0%</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <div class="flag">
-                                    <img
-                                      src="assets/img/flags/br.png"
-                                      alt="brazil"
-                                    />
-                                  </div>
-                                </td>
-                                <td>Brasil</td>
-                                <td class="text-end">0</td>
-                                <td class="text-end">0%</td>
-                              </tr>
+                              @php
+                                  $geoData = $geoCountries ?? collect();
+                                  $totalGeoVisits = $totalVisits ?? 0;
+                              @endphp
+
+                              @forelse($geoData as $country)
+                                @php
+                                    $code = strtolower($country->country_code ?? '');
+                                    $flagUrl = $code ? "https://flagcdn.com/24x18/{$code}.png" : null;
+                                    $percentage = $totalGeoVisits > 0 ? number_format(($country->total / $totalGeoVisits) * 100, 1) : 0;
+                                @endphp
+                                <tr>
+                                  <td>
+                                    @if($flagUrl)
+                                      <div class="flag">
+                                        <img src="{{ $flagUrl }}" alt="{{ $country->country_name ?? 'Unknown' }} flag" onerror="this.style.display='none';" />
+                                      </div>
+                                    @endif
+                                  </td>
+                                  <td>{{ $country->country_name ?? 'Unknown' }}</td>
+                                  <td class="text-end">{{ $country->total }}</td>
+                                  <td class="text-end">{{ $percentage }}%</td>
+                                </tr>
+                              @empty
+                                <tr>
+                                  <td colspan="4" class="text-muted text-center">No visitor data yet</td>
+                                </tr>
+                              @endforelse
                             </tbody>
                           </table>
                         </div>
@@ -423,113 +433,98 @@
                 </div>
               </div>
             </div>
-            <div class="row">
-              <div class="col-md-6">
-                <div class="card">
-                  <div class="card-header">
-                    <div class="card-head-row card-tools-still-right">
-                      <div class="card-title">User Log Activity</div>
-                      <div class="card-tools">
-                        <div class="dropdown">
-                          <button
-                            class="btn btn-icon btn-clean"
-                            type="button"
-                            id="dropdownMenuButton"
-                            data-bs-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                          >
-                            <i class="fas fa-ellipsis-h"></i>
-                          </button>
-                          <div
-                            class="dropdown-menu"
-                            aria-labelledby="dropdownMenuButton"
-                          >
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#"
-                              >Something else here</a
-                            >
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <ol class="activity-feed">
-                      @foreach($user_activity as $user_activity)
-                      <li class="feed-item feed-item-secondary">
-                        <time class="date" datetime="9-25">{{$user_activity->date_time}}</time>
-                        <span class="text"
-                          >{{$user_activity->name}}
-                          <a href="#">"{{$user_activity->description}}"</a></span
-                        >
-                      </li>
-                      @endforeach
-                    </ol>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="card">
-                  <div class="card-header">
-                    <div class="card-head-row">
-                      <div class="card-title">Subscribers</div>
-                      <div class="card-tools">
-                        <ul
-                          class="nav nav-pills nav-secondary nav-pills-no-bd nav-sm"
-                          id="pills-tab"
-                          role="tablist"
-                        >
-                          <li class="nav-item">
-                            <a
-                              class="nav-link active"
-                              id="pills-week"
-                              data-bs-toggle="pill"
-                              href="{{url('/admin-subscribers')}}"
-                              role="tab"
-                              aria-selected="false"
-                              >SUbscribers</a
-                            >
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    @foreach($subscriptions as $subscription)
-                    <div class="d-flex">
-                      <div class="avatar avatar-online">
-                        <span
-                          class="avatar-title rounded-circle border border-white bg-info"
-                          >TGR</span
-                        >
-                      </div>
-                      <div class="flex-1 ms-3 pt-1">
-                        <h6 class="text-uppercase fw-bold mb-1">
-                          {{$subscription->seminar->title ?? "NULL"}}
-                          <span class="text-warning ps-3">{{$subscription->user->email ?? "NULL"}}</span>
-                        </h6>
-                        <span class="text-muted"
-                          >{{$subscription->user->name ?? "NULL"}}</span
-                        >
-                      </div>
-                      <div class="float-end pt-1">
-                        <small class="text-muted">{{$subscription->created_at}}</small>
-                      </div>
-                    </div>
-                    <div class="separator-dashed"></div>
-                    @endforeach
-
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
 
-        @include('adminPortal.layout.footer')
+  @push('page-scripts')
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Traffic summary chart
+      const statsCtx = document.getElementById('statisticsChart');
+      if (statsCtx && window.Chart) {
+        const labels = @json($trafficLabels ?? []);
+        const visits = @json($trafficVisits ?? []);
+        const uniques = @json($trafficUnique ?? []);
 
+        new Chart(statsCtx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'Visits',
+                data: visits,
+                backgroundColor: 'rgba(239,68,68,0.12)',
+                borderColor: '#ef4444',
+                pointBackgroundColor: '#ef4444',
+                borderWidth: 2,
+                tension: 0.35
+              },
+              {
+                label: 'Unique Users',
+                data: uniques,
+                backgroundColor: 'rgba(59,130,246,0.12)',
+                borderColor: '#3b82f6',
+                pointBackgroundColor: '#3b82f6',
+                borderWidth: 2,
+                tension: 0.35
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: true, position: 'top' },
+              tooltip: { mode: 'index', intersect: false }
+            },
+            interaction: { mode: 'nearest', intersect: false },
+            scales: {
+              y: { beginAtZero: true, ticks: { precision: 0 } }
+            }
+          }
+        });
+      }
 
-        
+      const countrySeries = @json($countrySeries ?? []);
+      const mapEl = document.querySelector('#world-map');
+
+    if (!mapEl || typeof jsVectorMap === 'undefined') {
+      return;
+    }
+
+    const hasData = Object.keys(countrySeries || {}).length > 0;
+
+    if (!hasData) {
+      mapEl.innerHTML = '<div class="text-muted text-center py-4">No visitor data yet</div>';
+      return;
+    }
+
+    mapEl.innerHTML = '';
+
+    new jsVectorMap({
+      selector: '#world-map',
+      map: 'world',
+      zoomOnScroll: false,
+      regionStyle: {
+        initial: { fill: '#e5e7eb' },
+        hover: { fill: '#435ebe' },
+      },
+      series: {
+        regions: [{
+          values: countrySeries,
+          scale: ['#c7d2fe', '#1d4ed8'],
+          normalizeFunction: 'polynomial',
+        }],
+      },
+      onRegionTooltipShow(event, tooltip, code) {
+        const total = countrySeries[code] || 0;
+        tooltip.css({ backgroundColor: '#435ebe', color: '#fff' });
+        tooltip.text(`${tooltip.text()} — ${total} visit${total === 1 ? '' : 's'}`);
+      },
+    });
+  });
+  </script>
+  @endpush
+
+          @include('adminPortal.layout.footer')

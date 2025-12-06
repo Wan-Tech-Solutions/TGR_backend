@@ -35,11 +35,11 @@
                 </div>
                 <div class="header-column justify-content-center">
                     <div class="header-row">
-                        <div
-                            class="header-nav header-nav-line header-nav-top-line header-nav-top-line-with-border order-2 order-lg-1">
+                            <div
+                                class="header-nav header-nav-line header-nav-top-line header-nav-top-line-with-border order-2 order-lg-1">
                             <div
                                 class="header-nav-main header-nav-main-square header-nav-main-effect-2 header-nav-main-sub-effect-1">
-                                <nav class="collapse">
+                                <nav class="collapse navbar-collapse" id="mobileNav">
                                     <ul class="nav nav-pills" id="mainNav">
                                         <li> <a class="  {{ Request::is('home') ? 'active' : '' }}"
                                                 href="{{ route('home') }}">Home</a>
@@ -126,8 +126,9 @@
                                     </ul>
                                 </nav>
                             </div>
-                            <button class="btn header-btn-collapse-nav" data-bs-toggle="collapse"
-                                data-bs-target=".header-nav-main nav">
+                            <button type="button" class="btn header-btn-collapse-nav" data-bs-toggle="collapse"
+                                data-bs-target="#mobileNav" aria-controls="mobileNav" aria-expanded="false"
+                                aria-label="Toggle navigation">
                                 <i class="fas fa-bars"></i>
                             </button>
                         </div>

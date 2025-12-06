@@ -36,6 +36,7 @@ class User extends Authenticatable implements Auditable
         'password',
         'country_of_residence',
         'nationality',
+        'last_activity',
     ];
     public function subscriptions()
     {

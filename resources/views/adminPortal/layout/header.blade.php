@@ -29,8 +29,10 @@
         });
     </script>
 
-    <!-- Font Awesome Direct Link -->
+    <!-- Font Awesome Direct Link (with 6.x fallback) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <!-- Removed integrity mismatch on FA 6.x to avoid blocked loads -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- CSS Files -->
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" />
@@ -171,15 +173,95 @@
         .sidebar a {
             transition: color .18s ease, background .18s ease, box-shadow .18s ease;
         }
+
+        /* Sidebar width + transitions */
+        .sidebar {
+            width: 230px;
+            transition: transform .25s ease, box-shadow .25s ease;
+        }
+        .main-panel {
+            margin-left: 230px;
+            transition: margin-left .25s ease;
+        }
+
+        /* Mobile/Tablet: hide sidebar by default, toggle with button */
+        @media (max-width: 991px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 230px;
+                z-index: 2000;
+                background: #fff;
+                transform: translateX(-100%);
+                box-shadow: 4px 0 24px rgba(0,0,0,0.14);
+                overflow-y: auto;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-panel {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+            .sidebar-toggle {
+                position: fixed;
+                top: 14px;
+                left: 14px;
+                z-index: 2100;
+                background: #fff;
+                border: 1px solid rgba(0,0,0,0.1);
+                box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+                border-radius: 10px;
+                padding: 10px 12px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                color: #ef4444;
+            }
+            .sidebar-backdrop {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(15,23,42,0.45);
+                z-index: 1999;
+            }
+            body.sidebar-open .sidebar-backdrop {
+                display: block;
+            }
+        }
     </style>
 
 </head>
 
 <body>
+    <button class="sidebar-toggle d-lg-none" id="sidebarToggle" aria-label="Toggle sidebar">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-backdrop d-lg-none"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const backdrop = document.querySelector('.sidebar-backdrop');
+            if (!toggle || !sidebar) return;
+            toggle.addEventListener('click', () => {
+                const isOpen = sidebar.classList.toggle('open');
+                document.body.classList.toggle('sidebar-open', isOpen);
+                toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+            backdrop?.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                document.body.classList.remove('sidebar-open');
+                toggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+    </script>
     <!-- Include Notification System -->
     @include('components.notification-center')
-    
-    <div class="wrapper">
+
+<div class="wrapper">
         <!-- Sidebar -->
         <div class="sidebar sidebar-style-2" >
             <div class="sidebar-logo">
@@ -293,6 +375,12 @@
                             <a href="{{ route('admin.email-addresses.index') }}">
                                 <i class="fas fa-envelope"></i>
                                 <p>Email Addresses</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.rsvps') }}">
+                                <i class="fas fa-check-circle"></i>
+                                <p>RSVP Responses</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -462,7 +550,7 @@
                         </script>
                         <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
                             <!-- Messages Dropdown -->
-                            <li class="nav-item topbar-icon dropdown hidden-caret">
+                            {{-- <li class="nav-item topbar-icon dropdown hidden-caret">
                                 <a class="nav-link dropdown-toggle" href="#" id="messageDropdown"
                                     role="button" data-bs-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false">
@@ -510,7 +598,7 @@
                                         </a>
                                     </li>
                                 </ul>
-                            </li>
+                            </li> --}}
 
                             <!-- Notifications Dropdown -->
                             <li class="nav-item topbar-icon dropdown hidden-caret">

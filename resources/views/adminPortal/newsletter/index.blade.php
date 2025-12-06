@@ -2,7 +2,7 @@
 
 <div class="container-fluid px-4">
     <div class="page-inner py-4">
-        
+
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
@@ -61,11 +61,11 @@
         <!-- Statistics Cards -->
         <div class="row g-4 mb-5">
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
+                <div class="card border-0 shadow-sm h-100 stat-card stat-primary">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded-2 p-3 me-3">
-                                <i class="fas fa-users fa-lg"></i>
+                            <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded-2 p-2 me-3" style="width:46px;height:46px;display:flex;align-items:center;justify-content:center;">
+                                <i class="fas fa-users fa-md text-white"></i>
                             </div>
                             <div>
                                 <p class="text-muted text-uppercase small fw-semibold mb-1">Total Subscribers</p>
@@ -76,11 +76,11 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
+                <div class="card border-0 shadow-sm h-100 stat-card stat-success">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-success bg-opacity-10 text-success rounded-2 p-3 me-3">
-                                <i class="fas fa-check-circle fa-lg"></i>
+                            <div class="stat-icon bg-success bg-opacity-10 text-success rounded-2 p-2 me-3" style="width:46px;height:46px;display:flex;align-items:center;justify-content:center;">
+                                <i class="fas fa-check-circle fa-md text-white"></i>
                             </div>
                             <div>
                                 <p class="text-muted text-uppercase small fw-semibold mb-1">Active Subscribers</p>
@@ -91,11 +91,11 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
+                <div class="card border-0 shadow-sm h-100 stat-card stat-warning">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-warning bg-opacity-10 text-warning rounded-2 p-3 me-3">
-                                <i class="fas fa-user-slash fa-lg"></i>
+                            <div class="stat-icon bg-warning bg-opacity-10 text-warning rounded-2 p-2 me-3" style="width:46px;height:46px;display:flex;align-items:center;justify-content:center;">
+                                <i class="fas fa-user-slash fa-md text-white"></i>
                             </div>
                             <div>
                                 <p class="text-muted text-uppercase small fw-semibold mb-1">Unsubscribed</p>
@@ -106,11 +106,11 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
+                <div class="card border-0 shadow-sm h-100 stat-card stat-info">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center">
-                            <div class="stat-icon bg-info bg-opacity-10 text-info rounded-2 p-3 me-3">
-                                <i class="fas fa-chart-pie fa-lg"></i>
+                            <div class="stat-icon bg-info bg-opacity-10 text-info rounded-2 p-2 me-3" style="width:46px;height:46px;display:flex;align-items:center;justify-content:center;">
+                                <i class="fas fa-chart-pie fa-md text-white"></i>
                             </div>
                             <div>
                                 <p class="text-muted text-uppercase small fw-semibold mb-1">Active Rate</p>
@@ -152,7 +152,7 @@
                                 <th class="ps-4 small fw-semibold text-uppercase text-muted" style="width: 30%">Email Address</th>
                                 <th class="small fw-semibold text-uppercase text-muted" style="width: 15%">Status</th>
                                 <th class="small fw-semibold text-uppercase text-muted" style="width: 20%">Subscribed Date</th>
-                                <th class="small fw-semibold text-uppercase text-muted" style="width: 20%">Active Duration</th>
+                                <th class="small fw-semibold text-uppercase text-muted" style="width: 20%">Active Since</th>
                                 <th class="pe-4 small fw-semibold text-uppercase text-muted" style="width: 15%">Actions</th>
                             </tr>
                         </thead>
@@ -171,11 +171,9 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge rounded-pill py-2 px-3 fw-semibold 
-                                        @if($sub->active) bg-success bg-opacity-10 text-success border border-success border-opacity-25
-                                        @else bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 @endif">
-                                        <i class="fas @if($sub->active) fa-check-circle @else fa-times-circle @endif me-1"></i>
-                                        {{ $sub->active ? 'Active' : 'Unsubscribed' }}
+                                    <span class="badge status-badge rounded-pill py-2 px-3 fw-semibold @if($sub->active) status-active @else status-inactive @endif">
+                                        <i class="fas @if($sub->active) fa-check-circle @else fa-times-circle @endif"></i>
+                                        <span class="status-text">{{ $sub->active ? 'Active' : 'Unsubscribed' }}</span>
                                     </span>
                                 </td>
                                 <td>
@@ -275,27 +273,27 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label for="newsletterSubject" class="form-label small fw-semibold text-muted text-uppercase">Subject *</label>
-                                <input type="text" name="subject" id="newsletterSubject" class="form-control" 
+                                <input type="text" name="subject" id="newsletterSubject" class="form-control"
                                        placeholder="Enter newsletter subject" required>
                             </div>
                         </div>
-                        
+
                         <div class="col-12">
                             <div class="form-group">
                                 <label for="newsletterBody" class="form-label small fw-semibold text-muted text-uppercase">Message *</label>
-                                <textarea name="body" id="newsletterBody" class="form-control" rows="8" 
+                                <textarea name="body" id="newsletterBody" class="form-control" rows="8"
                                           placeholder="Write your newsletter content here..." required></textarea>
                             </div>
                         </div>
-                        
+
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="newsletterReplyTo" class="form-label small fw-semibold text-muted text-uppercase">Reply-To (Optional)</label>
-                                <input type="email" name="reply_to" id="newsletterReplyTo" class="form-control" 
+                                <input type="email" name="reply_to" id="newsletterReplyTo" class="form-control"
                                        placeholder="reply@example.com">
                             </div>
                         </div>
-                        
+
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="newsletterAttachments" class="form-label small fw-semibold text-muted text-uppercase">Attachments</label>
@@ -306,7 +304,7 @@
                                 </small>
                             </div>
                         </div>
-                        
+
                         <div class="col-12">
                             <div class="form-group">
                                 <label for="sendToSelect" class="form-label small fw-semibold text-muted text-uppercase">Send To *</label>
@@ -316,7 +314,7 @@
                                 </select>
                             </div>
                         </div>
-                        
+
                         <!-- Selected Subscribers Section -->
                         <div class="col-12" id="selectedSubscribersSection" style="display: none;">
                             <div class="card border">
@@ -343,7 +341,7 @@
                                                 @foreach($subscribers->where('active', true) as $sub)
                                                 <tr>
                                                     <td>
-                                                        <input type="checkbox" name="selected[]" value="{{ $sub->id }}" 
+                                                        <input type="checkbox" name="selected[]" value="{{ $sub->id }}"
                                                                class="form-check-input subscriber-checkbox">
                                                     </td>
                                                     <td>
@@ -386,6 +384,76 @@
     transform: translateY(-2px);
 }
 
+/* Stat cards with soft gradients and subtle borders */
+.stat-card {
+    border: 1px solid rgba(17, 24, 39, 0.05) !important;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+}
+
+.stat-card .card-body {
+    padding: 22px;
+}
+
+.stat-card .stat-icon {
+    border-radius: 12px !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.stat-card .stat-icon i {
+    color: currentColor;
+}
+
+.stat-card h3 {
+    letter-spacing: -0.2px;
+}
+
+.stat-card p {
+    letter-spacing: 0.3px;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+.stat-primary {
+    background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+}
+
+.stat-card.stat-primary .stat-icon {
+    background: rgba(59, 130, 246, 0.18);
+    color: #1d4ed8;
+}
+
+.stat-success {
+    background: linear-gradient(135deg, #ecfdf3 0%, #ffffff 100%);
+}
+
+.stat-card.stat-success .stat-icon {
+    background: rgba(34, 197, 94, 0.18);
+    color: #15803d;
+}
+
+.stat-warning {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffffff 100%);
+}
+
+.stat-card.stat-warning .stat-icon {
+    background: rgba(245, 158, 11, 0.20);
+    color: #b45309;
+}
+
+.stat-info {
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+}
+
+.stat-card.stat-info .stat-icon {
+    background: rgba(59, 130, 246, 0.18);
+    color: #0ea5e9;
+}
+
 .stat-icon {
     width: 56px;
     height: 56px;
@@ -421,6 +489,31 @@
     font-weight: 500;
 }
 
+/* Explicit status badge styling to ensure visibility */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid transparent;
+    font-weight: 700;
+}
+
+.status-badge i {
+    font-size: 12px;
+}
+
+.status-badge.status-active {
+    background: rgba(34, 197, 94, 0.12);
+    color: #166534;
+    border-color: rgba(34, 197, 94, 0.35);
+}
+
+.status-badge.status-inactive {
+    background: rgba(107, 114, 128, 0.14);
+    color: #374151;
+    border-color: rgba(107, 114, 128, 0.35);
+}
+
 .form-control {
     border-radius: 6px;
     border: 1px solid #e2e8f0;
@@ -452,16 +545,16 @@
     .d-flex.flex-lg-row {
         flex-direction: column !important;
     }
-    
+
     .input-group {
         width: 100% !important;
         margin-top: 1rem;
     }
-    
+
     .table-responsive {
         font-size: 0.875rem;
     }
-    
+
     .btn-sm {
         padding: 0.25rem 0.375rem;
     }
@@ -473,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Toggle selected subscribers section
     const sendToSelect = document.getElementById('sendToSelect');
     const selectedSection = document.getElementById('selectedSubscribersSection');
-    
+
     sendToSelect.addEventListener('change', function(e) {
         if (e.target.value === 'selected') {
             selectedSection.style.display = 'block';
@@ -485,7 +578,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Select all subscribers checkbox
     const selectAll = document.getElementById('selectAll');
     const subscriberCheckboxes = document.querySelectorAll('.subscriber-checkbox');
-    
+
     if (selectAll) {
         selectAll.addEventListener('change', function(e) {
             subscriberCheckboxes.forEach(function(cb) {
@@ -506,7 +599,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Form validation for selected subscribers
     const newsletterForm = document.getElementById('newsletterForm');
-    
+
     newsletterForm.addEventListener('submit', function(e) {
         const sendTo = sendToSelect.value;
         if (sendTo === 'selected') {
@@ -517,13 +610,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
         }
-        
+
         // Show loading state
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
         submitBtn.disabled = true;
-        
+
         // Allow form submission
         return true;
     });

@@ -13,8 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('events', function (Blueprint $table) {
-            $table->text('additional_emails')->nullable();
+        Schema::table('users', function (Blueprint $table) {
+            if (!Schema::hasColumn('users', 'last_activity')) {
+                $table->timestamp('last_activity')->nullable()->after('updated_at');
+            }
         });
     }
 
@@ -25,8 +27,10 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('events', function (Blueprint $table) {
-            $table->dropColumn('additional_emails');
+        Schema::table('users', function (Blueprint $table) {
+            if (Schema::hasColumn('users', 'last_activity')) {
+                $table->dropColumn('last_activity');
+            }
         });
     }
 };

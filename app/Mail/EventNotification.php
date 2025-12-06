@@ -7,7 +7,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Queue\SerializesModels;
+use App\Services\IcsGenerator;
 
 class EventNotification extends Mailable
 {
@@ -33,7 +35,7 @@ class EventNotification extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'New Event: ' . $this->event->event_title,
+            subject: 'Event Invitation: ' . $this->event->event_title,
         );
     }
 
@@ -56,6 +58,14 @@ class EventNotification extends Mailable
      */
     public function attachments()
     {
-        return [];
+        // Generate .ics calendar file
+        $icsContent = IcsGenerator::generate($this->event);
+        $filename = 'event-' . \Str::slug($this->event->event_title) . '.ics';
+
+        // Create attachment from raw data
+        return [
+            Attachment::fromData(fn () => $icsContent, $filename)
+                ->withMime('text/calendar')
+        ];
     }
 }

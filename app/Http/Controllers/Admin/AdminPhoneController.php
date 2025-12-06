@@ -23,7 +23,7 @@ class AdminPhoneController extends Controller
             'name' => 'required',
             'phone' => 'required',
             'email' => 'nullable|email',
-            'website' => 'nullable|url',
+            'website' => 'nullable|string|max:255',
             'address' => 'nullable|string'
         ]);
 
@@ -56,7 +56,7 @@ class AdminPhoneController extends Controller
             'name' => 'required',
             'phone' => 'required',
             'email' => 'nullable|email',
-            'website' => 'nullable|url',
+            'website' => 'nullable|string|max:255',
             'address' => 'nullable|string'
         ]);
 

@@ -1,16 +1,14 @@
 <?php
 declare(strict_types=1);
 namespace App\Models;
-use App\Models\Traits\SaveToUpper;
 use App\Models\Traits\UuidTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
-class activityLog extends Model implements Auditable
+class EventRsvp extends Model implements Auditable
 {
     use HasFactory;
      use UuidTrait;
-      use SaveToUpper;
       use \OwenIt\Auditing\Auditable;
     /**
         * The attributes that are mass assignable.
@@ -19,15 +17,11 @@ class activityLog extends Model implements Auditable
         */
         protected $fillable = [
             'uuid',
-            'name',
+            'event_id',
             'email',
-            'description',
-            'date_time',
-            'user_id',
-            'ip_address',
-            'user_agent',
-            'method',
-            'path',
+            'response',
+            'message',
+            'responded_at'
         ];
 
         /**
@@ -36,11 +30,11 @@ class activityLog extends Model implements Auditable
         * @var array<string, string>
         */
         protected $casts = [
-            'date_time' => 'datetime',
+            'responded_at' => 'datetime',
         ];
 
-        public function user()
+        public function event()
         {
-            return $this->belongsTo(User::class);
+            return $this->belongsTo(Event::class);
         }
 }
